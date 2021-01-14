@@ -56,3 +56,17 @@ scons platform=PLATFORM generate_bindings=yes -j20 use_custom_api_file=yes custo
 scons platform=PLATFORM generate_bindings=yes -j20 use_custom_api_file=yes custom_api_file=../../build/api.json bits=64 target=debug
 cd ../..
 ```
+
+### Compile
+
+It's finally time to compile the game modules. These steps need to be
+repeated each time the C++ source code is modified.
+
+```sh
+scons platform=PLATFORM
+```
+
+For release build:
+```sh
+scons platform=PLATFORM target=release
+```
