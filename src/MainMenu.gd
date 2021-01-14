@@ -18,3 +18,7 @@ func _ready():
 
 func _on_QuitButton_pressed():
     get_tree().quit()
+
+
+func _on_Button_pressed():
+    get_tree().change_scene("res://src/Game.tscn")
