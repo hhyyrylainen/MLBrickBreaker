@@ -19,7 +19,7 @@ godot_headers_path = "third_party/godot-cpp/godot_headers/"
 cpp_bindings_path = "third_party/godot-cpp/"
 cpp_library = "libgodot-cpp"
 
-compile_commands_file = 'build/compile_commands.json'
+compile_commands_file = 'compile_commands.json'
 
 # only support 64 at this time..
 bits = 64
@@ -29,6 +29,8 @@ opts.Update(env)
 
 env["COMPILATIONDB_USE_ABSPATH"] = False
 env.Tool('compilation_db')
+env.CompilationDatabase(compile_commands_file)
+
 
 # Process some arguments
 if env['use_llvm']:
@@ -111,7 +113,3 @@ Default(library)
 
 # Generates help for the -h scons option.
 Help(opts.GenerateHelpText(env))
-
-with open(compile_commands_file, "w") as file:
-    commands = env.CompilationDatabase(compile_commands_file)
-    file.write(str(commands))
