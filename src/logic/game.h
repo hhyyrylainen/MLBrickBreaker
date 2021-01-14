@@ -1,25 +1,27 @@
 #pragma once
 
 #include <Godot.hpp>
-// #include <Node.hpp>
-#include <Sprite.hpp>
+#include <Node.hpp>
+#include <PackedScene.hpp>
 
 namespace mlbb {
 
 //! \brief Main class handling the game scene
-class Game : public godot::Sprite {
-    GODOT_CLASS(Game, Sprite);
+class Game : public godot::Node {
+    GODOT_CLASS(Game, Node);
 
 private:
-    float time_passed;
+    float TimePassed = 0.f;
+    godot::Ref<godot::PackedScene> BrickScene = nullptr;
 
 public:
     static void _register_methods();
 
-    Game();
-    ~Game();
+    Game() = default;
+    ~Game() = default;
 
-    void _init(); // our initializer called by Godot
+    void _init();
+    void _ready();
 
     void _process(float delta);
 };

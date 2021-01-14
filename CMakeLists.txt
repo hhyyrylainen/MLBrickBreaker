@@ -45,6 +45,10 @@ string(REGEX REPLACE "([\\/\\-]O)2" "\\13"
 string(REGEX REPLACE "([\\/\\-]O)2" "\\13"
   CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 
+if(UNIX)
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
+endif()
+
 # Godot scons build copied info
 
 set(GODOT_HEADERS_PATH "third_party/godot-cpp/godot_headers/")

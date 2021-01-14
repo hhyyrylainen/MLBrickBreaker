@@ -78,3 +78,19 @@ cmake --build .
 ```
 
 Alternatively use `make` or visual studio to compile.
+
+
+## Some random notes
+
+GDNative tutorials:
+- https://docs.godotengine.org/en/3.2/tutorials/plugins/gdnative/gdnative-cpp-example.html
+- https://docs.godotengine.org/en/3.2/tutorials/plugins/gdnative/gdnative-c-example.html#doc-gdnative-c-example
+- https://github.com/godotengine/godot-cpp/tree/master
+- https://github.com/BastiaanOlij/gdnative_cpp_example
+- Might be useful to get Windows build working: https://gist.github.com/willnationsdev/437eeaeea2e675c0bea53343f7ecd4cf
+
+`reloadable=true` needs to be in any GDNative modules to make
+recompiling them reload them in the editor, otherwise you will be
+closing and reopening the Godot editor a lot.
+
+
