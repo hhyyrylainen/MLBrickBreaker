@@ -59,14 +59,20 @@ cd ../..
 
 ### Compile
 
-It's finally time to compile the game modules. These steps need to be
-repeated each time the C++ source code is modified.
+It's finally time to compile the game modules. 
+Configure build:
 
 ```sh
-scons platform=PLATFORM
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
 ```
 
-For release build:
+For debug build set the type to `Debug`.
+
+These steps need to be repeated each time the C++ source code is modified:
+
 ```sh
-scons platform=PLATFORM target=release
+cmake --build .
 ```
+
+Alternatively use `make` or visual studio to compile.
