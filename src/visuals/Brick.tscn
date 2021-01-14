@@ -7,3 +7,4 @@
 [node name="Sprite" type="Sprite" parent="."]
 scale = Vector2( 0.45, 0.45 )
 texture = ExtResource( 1 )
+centered = false
