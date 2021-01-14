@@ -7,7 +7,7 @@ namespace mlbb{
 
 //! \brief Main class handling the game scene
 class Game : public godot::Node {
-    GODOT_CLASS(GDExample, Sprite);
+    GODOT_CLASS(Game, Node);
 
 private:
         float time_passed;
