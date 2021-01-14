@@ -20,6 +20,8 @@ change the submodule versions.
 pip install scons --user
 ```
 
+And also install cmake. On Windows make sure it is added to PATH.
+
 ### Compiler
 
 On Linux, just install gcc or clang or whatever your systems default compiler is.

@@ -21,4 +21,5 @@ func _on_QuitButton_pressed():
 
 
 func _on_Button_pressed():
-    get_tree().change_scene("res://src/Game.tscn")
+    if get_tree().change_scene("res://src/Game.tscn") != OK:
+        printerr("can't load game scene")
