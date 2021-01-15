@@ -11,15 +11,13 @@ void Game::_register_methods()
     register_property<Game, decltype(BrickScene)>("BrickScene", &Game::BrickScene, nullptr);
 }
 
-void Game::_init()
-{
-}
+void Game::_init() {}
 
 void Game::_ready()
 {
-    add_child(BrickScene->instance());
+    GameVisuals = get_node("VisualizedGame");
+
+    GameVisuals->add_child(BrickScene->instance());
 }
 
 void Game::_process(float delta) {}
-
-

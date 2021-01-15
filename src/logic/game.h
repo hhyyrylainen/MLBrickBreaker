@@ -2,6 +2,7 @@
 
 #include <Godot.hpp>
 #include <Node.hpp>
+#include <Node2D.hpp>
 #include <PackedScene.hpp>
 
 namespace mlbb {
@@ -10,13 +11,7 @@ namespace mlbb {
 class Game : public godot::Node {
     GODOT_CLASS(Game, Node);
 
-private:
-    float TimePassed = 0.f;
-    godot::Ref<godot::PackedScene> BrickScene = nullptr;
-
 public:
-    static void _register_methods();
-
     Game() = default;
     ~Game() = default;
 
@@ -24,6 +19,13 @@ public:
     void _ready();
 
     void _process(float delta);
+
+    static void _register_methods();
+
+private:
+    float TimePassed = 0.f;
+    godot::Ref<godot::PackedScene> BrickScene = nullptr;
+    godot::Ref<godot::Node2D> GameVisuals = nullptr;
 };
 
 } // namespace mlbb
