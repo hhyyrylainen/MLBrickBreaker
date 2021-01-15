@@ -71,10 +71,18 @@ cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
 For debug build set the type to `Debug`.
 
-These steps need to be repeated each time the C++ source code is modified:
+
+For Windows (if you use visual studio), you need to use this instead:
+```sh
+cmake .. -G "Visual Studio 16 2019" -A x64
+```
+
+
+These steps need to be repeated each time the C++ source code is modified
+(note that you need to run this in the build folder):
 
 ```sh
-cmake --build .
+cmake --build . --config RelWithDebInfo
 ```
 
 Alternatively use `make` or visual studio to compile.
