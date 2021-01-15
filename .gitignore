@@ -4,3 +4,6 @@
 /.mono/
 /bin/x11/
 /build-debug/
+/bin/win64/
+.vs
+.history
