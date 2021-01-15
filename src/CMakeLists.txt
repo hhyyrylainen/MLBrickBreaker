@@ -8,8 +8,8 @@ set(SOURCES
 add_library(mlbb SHARED ${SOURCES})
 
 if(WIN32)
-  target_link_libraries(mlbb PRIVATE optimized libgodot-cpp.win64.release.${BITNESS}.a
-    debug libgodot-cpp.win64.debug.${BITNESS}.a)
+  target_link_libraries(mlbb PRIVATE optimized libgodot-cpp.windows.release.${BITNESS}.lib
+    debug libgodot-cpp.windows.debug.${BITNESS}.lib)
 
   # Just to make sure things are consistent with the scons stuff
   target_compile_definitions(mlbb PRIVATE WINDOWS _CRT_SECURE_NO_WARNINGS)
