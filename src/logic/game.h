@@ -25,7 +25,7 @@ public:
 private:
     float TimePassed = 0.f;
     godot::Ref<godot::PackedScene> BrickScene = nullptr;
-    godot::Ref<godot::Node2D> GameVisuals = nullptr;
+    godot::Node2D* GameVisuals = nullptr;
 };
 
 } // namespace mlbb

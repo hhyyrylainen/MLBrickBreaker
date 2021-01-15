@@ -15,7 +15,7 @@ void Game::_init() {}
 
 void Game::_ready()
 {
-    GameVisuals = get_node("VisualizedGame");
+    GameVisuals = get_node<Node2D>("VisualizedGame");
 
     GameVisuals->add_child(BrickScene->instance());
 }
