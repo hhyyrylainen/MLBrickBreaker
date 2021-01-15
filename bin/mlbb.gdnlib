@@ -7,12 +7,12 @@ reloadable=true
 
 [entry]
 
-X11.64="res://bin/x11/libmlbb.so"
-Windows.64="res://bin/win64/libmlbb.dll"
 OSX.64="res://bin/osx/libmlbb.dylib"
+Windows.64="res://bin/win64/mlbb.dll"
+X11.64="res://bin/x11/libmlbb.so"
 
 [dependencies]
 
-X11.64=[]
-Windows.64=[]
-OSX.64=[]
+OSX.64=[  ]
+Windows.64=[  ]
+X11.64=[  ]
