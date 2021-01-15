@@ -1,0 +1,1 @@
+Checks: '-cppcoreguidelines-pro-type-static-cast-downcast,-performance-unnecessary-value-param'
