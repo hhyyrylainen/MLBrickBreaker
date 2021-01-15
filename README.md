@@ -87,6 +87,9 @@ cmake --build . --config RelWithDebInfo
 
 Alternatively use `make` or visual studio to compile.
 
+### Godot tab config
+
+You need to change "Editor Settings>Text Editor>Indent>Type" to spaces.
 
 ## Some random notes
 
