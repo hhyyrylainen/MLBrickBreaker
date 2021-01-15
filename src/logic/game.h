@@ -23,9 +23,13 @@ public:
     static void _register_methods();
 
 private:
-    float TimePassed = 0.f;
     godot::Ref<godot::PackedScene> BrickScene = nullptr;
+    godot::Ref<godot::PackedScene> BallScene = nullptr;
+    godot::Ref<godot::PackedScene> PaddleScene = nullptr;
+
     godot::Node2D* GameVisuals = nullptr;
+
+    float TimePassed = 0.f;
 };
 
 } // namespace mlbb
