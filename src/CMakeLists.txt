@@ -1,8 +1,8 @@
 # All source files must be listed here
 set(SOURCES
-  logic/game.h logic/game.cpp
+  logic/Game.h logic/Game.cpp
   logic/gdlibrary.cpp
-  )
+  logic/Match.cpp logic/Match.h logic/Definitions.h logic/GameElements.h logic/Input.cpp logic/Input.h)
 
 # library and compile option setup
 add_library(mlbb SHARED ${SOURCES})
