@@ -22,7 +22,7 @@ func _ready():
     is_player = Globals.is_player
 
 
-func _process(delta):
+func _process(_delta):
     fps_label.text = "FPS: %s" % Engine.get_frames_per_second()
 
     if is_player:
