@@ -8,6 +8,7 @@
 #include <Node2D.hpp>
 #include <PackedScene.hpp>
 
+#include <Control.hpp>
 #include <memory>
 #include <optional>
 
@@ -40,6 +41,7 @@ private:
     godot::Ref<godot::PackedScene> PaddleScene = nullptr;
 
     godot::Node2D* GameVisuals = nullptr;
+    godot::Control* ControlPanel = nullptr;
 
     std::optional<NodeHolder<godot::Node2D>> Paddles;
     std::optional<NodeHolder<godot::Node2D>> Balls;

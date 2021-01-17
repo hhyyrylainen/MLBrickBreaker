@@ -15,20 +15,27 @@ void Game::_register_methods()
     register_property<Game, decltype(BrickScene)>("BrickScene", &Game::BrickScene, nullptr);
     register_property<Game, decltype(BallScene)>("BallScene", &Game::BallScene, nullptr);
     register_property<Game, decltype(PaddleScene)>("PaddleScene", &Game::PaddleScene, nullptr);
-
-    register_property("PlayerControlled", &Game::PlayerControlled, false);
 }
 
 void Game::_init() {}
 
 void Game::_ready()
 {
+    // Read globals
+    auto globals = get_node("/root/Globals");
+    PlayerControlled = globals->get("is_player").booleanize();
+
     // Size override gives the wanted (logical size) 1920x1080
     const auto& windowSize = get_viewport()->get_size_override();
     GameVisuals = get_node<Node2D>("VisualizedGame");
 
     if(!GameVisuals)
         throw std::runtime_error("couldn't get GameVisuals");
+
+    ControlPanel = get_node<Control>("GameControlPanel");
+
+    if(!ControlPanel)
+        throw std::runtime_error("couldn't get ControlPanel");
 
     Paddles = NodeHolder<godot::Node2D>(
         GameVisuals, [this]() { return static_cast<Node2D*>(PaddleScene->instance()); });
@@ -45,6 +52,8 @@ void Game::_ready()
         // TODO: AI training
         ActiveMatch = std::make_shared<Match>(windowSize.x, windowSize.y);
     }
+
+    ControlPanel->set("is_player", PlayerControlled);
 }
 
 void Game::_process(float delta)

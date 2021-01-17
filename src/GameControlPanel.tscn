@@ -1,0 +1,60 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/GameControlPanel.gd" type="Script" id=1]
+
+[node name="GameControlPanel" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+fps_label_path = NodePath("PanelContainer/VBoxContainer/HBoxContainer/HBoxContainer/FPS")
+player_label_path = NodePath("PanelContainer/VBoxContainer/HBoxContainer/GameType")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+margin_right = 28.0
+margin_bottom = 28.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+margin_left = 14.0
+margin_top = 14.0
+margin_right = 264.0
+margin_bottom = 84.0
+rect_min_size = Vector2( 250, 0 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+margin_right = 250.0
+margin_bottom = 25.0
+size_flags_horizontal = 3
+
+[node name="GameType" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+margin_right = 90.0
+margin_bottom = 25.0
+text = "Player: ?"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+margin_left = 98.0
+margin_right = 250.0
+margin_bottom = 25.0
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="FPS" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer/HBoxContainer"]
+margin_left = 91.0
+margin_right = 152.0
+margin_bottom = 25.0
+text = "FPS: ?"
+align = 2
+
+[node name="QuitButton" type="Button" parent="PanelContainer/VBoxContainer"]
+margin_left = 90.0
+margin_top = 33.0
+margin_right = 160.0
+margin_bottom = 70.0
+size_flags_horizontal = 4
+text = "Quit"
+[connection signal="pressed" from="PanelContainer/VBoxContainer/QuitButton" to="." method="_on_QuitButton_pressed"]

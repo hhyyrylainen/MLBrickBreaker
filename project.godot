@@ -20,6 +20,10 @@ config/description="AI learns to play brick breaker"
 run/main_scene="res://src/MainMenu.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Globals="*res://src/globals.gd"
+
 [display]
 
 window/size/width=1920

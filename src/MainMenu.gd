@@ -5,16 +5,22 @@ extends Control
 # var a = 2
 # var b = "text"
 
+var wants_to_begin_game = false
+
+
 onready var game_scene = load("res://src/Game.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-    pass # Replace with function body.
+    pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#    pass
+func _process(delta):
+    if wants_to_begin_game:
+        wants_to_begin_game = false
+        if get_tree().change_scene_to(game_scene) != OK:
+            printerr("can't load game scene")
 
 
 func _on_QuitButton_pressed():
@@ -22,19 +28,11 @@ func _on_QuitButton_pressed():
 
 
 func _on_Button_pressed():
-    var tree = get_parent()
-
-    self.queue_free()
-
-    tree.remove_child(self)
-
-    var game = game_scene.instance()
-
-    game.PlayerControlled = true
-
-    tree.add_child(game)
+    Globals.is_player = true
+    wants_to_begin_game = true
 
 
 func _on_TrainAI_pressed():
-    if get_tree().change_scene_to(game_scene) != OK:
-        printerr("can't load game scene")
+    Globals.is_player = false
+    wants_to_begin_game = true
+
