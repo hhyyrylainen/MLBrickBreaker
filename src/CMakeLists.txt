@@ -2,7 +2,11 @@
 set(SOURCES
   logic/Game.h logic/Game.cpp
   logic/gdlibrary.cpp
-  logic/Match.cpp logic/Match.h logic/Definitions.h logic/GameElements.h logic/Input.cpp logic/Input.h)
+  logic/Match.cpp logic/Match.h
+  logic/Definitions.h
+  logic/GameElements.h
+  logic/Input.cpp logic/Input.h
+  logic/NodeHolder.h)
 
 # library and compile option setup
 add_library(mlbb SHARED ${SOURCES})

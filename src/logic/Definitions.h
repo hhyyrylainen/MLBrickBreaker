@@ -20,4 +20,6 @@ constexpr auto BRICK_WIDTH = BRICK_WIDTH_PIXELS;
 constexpr auto BRICK_HEIGHT = BRICK_HEIGHT_PIXELS;
 constexpr auto BALL_SIZE = BALL_SIZE_PIXELS;
 
+constexpr auto PADDLE_SPEED = 3500.f;
+
 } // namespace mlbb

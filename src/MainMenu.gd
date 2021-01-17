@@ -5,6 +5,7 @@ extends Control
 # var a = 2
 # var b = "text"
 
+onready var game_scene = load("res://src/Game.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -21,5 +22,19 @@ func _on_QuitButton_pressed():
 
 
 func _on_Button_pressed():
-    if get_tree().change_scene("res://src/Game.tscn") != OK:
+    var tree = get_parent()
+
+    self.queue_free()
+
+    tree.remove_child(self)
+
+    var game = game_scene.instance()
+
+    game.PlayerControlled = true
+
+    tree.add_child(game)
+
+
+func _on_TrainAI_pressed():
+    if get_tree().change_scene_to(game_scene) != OK:
         printerr("can't load game scene")

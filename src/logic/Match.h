@@ -5,6 +5,7 @@
 #include "Input.h"
 
 #include <vector>
+#include <tuple>
 
 namespace mlbb {
 
@@ -20,6 +21,12 @@ public:
     //! \brief Creates a match with specified size. Due to the way rendering is done in Godot
     //! We don't need to resize even when window size changes
     Match(int width, int height) : Width(width), Height(height) {}
+
+    Match(Match&& other);
+    Match(const Match& other);
+
+    Match& operator=(const Match& other) = delete;
+    Match& operator=(Match&& other) = delete;
 
     //! \brief Updates the game state
     void Update(float elapsed, const Input& input);
@@ -40,9 +47,19 @@ public:
     }
 
 private:
+    void MoveToState(MatchState newState);
+
+    void HandlePaddleMove(float elapsed, const Input& input);
+
+    void HandleStartup();
+
+    std::tuple<int, int> CalculatePaddleStartPosition() const;
+
+private:
     const int Width;
     const int Height;
 
+    //! The state of the match. Don't assign directly, use MoveToState
     MatchState State = MatchState::Starting;
 
     float TotalElapsed = 0;

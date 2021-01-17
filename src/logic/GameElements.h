@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Vector2.hpp>
 namespace mlbb {
 
 enum class PaddleSize { Normal };
@@ -7,6 +8,10 @@ enum class PaddleSize { Normal };
 struct GameElement {
 public:
     GameElement(int x, int y) : X(x), Y(y) {}
+
+    godot::Vector2 PositionAsVector() const{
+        return godot::Vector2(X, Y);
+    }
 
     int X;
     int Y;

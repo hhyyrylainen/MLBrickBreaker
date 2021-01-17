@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Definitions.h"
+#include "GameElements.h"
 
 #include <Viewport.hpp>
 
@@ -14,47 +15,92 @@ void Game::_register_methods()
     register_property<Game, decltype(BrickScene)>("BrickScene", &Game::BrickScene, nullptr);
     register_property<Game, decltype(BallScene)>("BallScene", &Game::BallScene, nullptr);
     register_property<Game, decltype(PaddleScene)>("PaddleScene", &Game::PaddleScene, nullptr);
+
+    register_property("PlayerControlled", &Game::PlayerControlled, false);
 }
 
 void Game::_init() {}
 
 void Game::_ready()
 {
-    const auto& windowSize = get_viewport()->get_size();
+    // Size override gives the wanted (logical size) 1920x1080
+    const auto& windowSize = get_viewport()->get_size_override();
     GameVisuals = get_node<Node2D>("VisualizedGame");
 
-    auto brick = static_cast<Node2D*>(BrickScene->instance());
-    GameVisuals->add_child(brick);
+    if(!GameVisuals)
+        throw std::runtime_error("couldn't get GameVisuals");
 
-    auto brick2 = static_cast<Node2D*>(BrickScene->instance());
-    GameVisuals->add_child(brick2);
+    Paddles = NodeHolder<godot::Node2D>(
+        GameVisuals, [this]() { return static_cast<Node2D*>(PaddleScene->instance()); });
 
-    auto brick3 = static_cast<Node2D*>(BrickScene->instance());
-    GameVisuals->add_child(brick3);
+    Balls = NodeHolder<godot::Node2D>(
+        GameVisuals, [this]() { return static_cast<Node2D*>(BallScene->instance()); });
 
-    brick->set_position(Vector2(200, 50));
-    brick2->set_position(Vector2(200 + BRICK_WIDTH_PIXELS, 50));
-    brick3->set_position(Vector2(200, 50 + BRICK_HEIGHT_PIXELS));
+    Bricks = NodeHolder<godot::Node2D>(
+        GameVisuals, [this]() { return static_cast<Node2D*>(BrickScene->instance()); });
 
-    auto paddle = static_cast<Node2D*>(PaddleScene->instance());
-    GameVisuals->add_child(paddle);
-
-    auto paddle2 = static_cast<Node2D*>(PaddleScene->instance());
-    GameVisuals->add_child(paddle2);
-
-    paddle->set_position(Vector2(windowSize.x / 2, windowSize.y - PADDLE_HEIGHT_PIXELS));
-    paddle2->set_position(
-        Vector2(windowSize.x - PADDLE_WIDTH_PIXELS, windowSize.y - PADDLE_HEIGHT_PIXELS));
-
-    auto ball = static_cast<Node2D*>(BallScene->instance());
-    GameVisuals->add_child(ball);
-
-    auto ball2 = static_cast<Node2D*>(BallScene->instance());
-    GameVisuals->add_child(ball2);
-
-    const auto firstBallPos = Vector2(windowSize.x / 2, windowSize.y / 2);
-    ball->set_position(firstBallPos);
-    ball2->set_position(firstBallPos + Vector2(BALL_SIZE_PIXELS, 0));
+    if(PlayerControlled) {
+        ActiveMatch = std::make_shared<Match>(windowSize.x, windowSize.y);
+    } else {
+        // TODO: AI training
+        ActiveMatch = std::make_shared<Match>(windowSize.x, windowSize.y);
+    }
 }
 
-void Game::_process(float delta) {}
+void Game::_process(float delta)
+{
+    if(PlayerControlled) {
+        if(ActiveMatch) {
+            ActiveMatch->Update(delta, UserInput());
+        }
+    } else {
+        // TODO: run AI
+        if(ActiveMatch) {
+            ActiveMatch->Update(delta, ProgrammaticInput());
+        }
+    }
+
+    DrawGame();
+}
+
+void Game::DrawGame()
+{
+    if(!ActiveMatch) {
+        DrawPaddles({});
+        DrawBalls({});
+        DrawBricks({});
+    } else {
+        DrawPaddles(ActiveMatch->GetPaddlesForDrawing());
+        DrawBalls(ActiveMatch->GetBallsForDrawing());
+        DrawBricks(ActiveMatch->GetBricksForDrawing());
+    }
+}
+
+template<class T, class HolderT>
+void DrawHelper(const std::vector<T>& gameObjects, HolderT& container)
+{
+    container.UnMarkAll();
+
+    for(const auto& object : gameObjects) {
+        auto graphics = container.GetNext();
+
+        graphics->set_position(object.PositionAsVector());
+    }
+
+    container.FreeUnmarked();
+}
+
+void Game::DrawPaddles(const std::vector<Paddle>& paddles)
+{
+    DrawHelper(paddles, *Paddles);
+}
+
+void Game::DrawBalls(const std::vector<Ball>& balls)
+{
+    DrawHelper(balls, *Balls);
+}
+
+void Game::DrawBricks(const std::vector<Brick>& bricks)
+{
+    DrawHelper(bricks, *Bricks);
+}

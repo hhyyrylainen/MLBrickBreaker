@@ -20,20 +20,34 @@ __meta__ = {
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
-margin_left = 925.0
-margin_top = 499.0
-margin_right = 995.0
-margin_bottom = 581.0
+margin_left = 897.0
+margin_top = 454.0
+margin_right = 1023.0
+margin_bottom = 626.0
 
 [node name="Button" type="Button" parent="CenterContainer/VBoxContainer"]
-margin_right = 70.0
+margin_right = 126.0
 margin_bottom = 37.0
 text = "Play"
 
-[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="TrainAI" type="Button" parent="CenterContainer/VBoxContainer"]
 margin_top = 45.0
-margin_right = 70.0
+margin_right = 126.0
 margin_bottom = 82.0
+text = "Train AI"
+
+[node name="ReplayAI" type="Button" parent="CenterContainer/VBoxContainer"]
+margin_top = 90.0
+margin_right = 126.0
+margin_bottom = 127.0
+disabled = true
+text = "Replay AI"
+
+[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer"]
+margin_top = 135.0
+margin_right = 126.0
+margin_bottom = 172.0
 text = "Quit"
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Button" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/TrainAI" to="." method="_on_TrainAI_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/QuitButton" to="." method="_on_QuitButton_pressed"]
