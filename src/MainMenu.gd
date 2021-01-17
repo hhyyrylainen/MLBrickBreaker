@@ -5,8 +5,6 @@ extends Control
 # var a = 2
 # var b = "text"
 
-var wants_to_begin_game = false
-
 
 onready var game_scene = load("res://src/Game.tscn")
 
@@ -17,10 +15,7 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-    if wants_to_begin_game:
-        wants_to_begin_game = false
-        if get_tree().change_scene_to(game_scene) != OK:
-            printerr("can't load game scene")
+    pass
 
 
 func _on_QuitButton_pressed():
@@ -29,10 +24,11 @@ func _on_QuitButton_pressed():
 
 func _on_Button_pressed():
     Globals.is_player = true
-    wants_to_begin_game = true
+    if get_tree().change_scene_to(game_scene) != OK:
+        printerr("can't load game scene")
 
 
 func _on_TrainAI_pressed():
     Globals.is_player = false
-    wants_to_begin_game = true
-
+    if get_tree().change_scene_to(game_scene) != OK:
+        printerr("can't load game scene")

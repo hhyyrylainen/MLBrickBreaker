@@ -22,7 +22,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Globals="*res://src/globals.gd"
+Globals="*res://src/Globals.gdns"
 
 [display]
 

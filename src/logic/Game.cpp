@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Definitions.h"
 #include "GameElements.h"
+#include "Globals.h"
 
 #include <Viewport.hpp>
 
@@ -22,8 +23,8 @@ void Game::_init() {}
 void Game::_ready()
 {
     // Read globals
-    auto globals = get_node("/root/Globals");
-    PlayerControlled = globals->get("is_player").booleanize();
+    auto globals = get_node<Globals>("/root/Globals");
+    PlayerControlled = globals->GetIsPlayer();
 
     // Size override gives the wanted (logical size) 1920x1080
     const auto& windowSize = get_viewport()->get_size_override();

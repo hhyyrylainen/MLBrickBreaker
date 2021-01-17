@@ -16,7 +16,7 @@ namespace mlbb {
 
 //! \brief Main class handling the game scene
 class Game : public godot::Node {
-    GODOT_CLASS(Game, Node);
+    GODOT_CLASS(Game, godot::Node);
 
 public:
     Game() = default;

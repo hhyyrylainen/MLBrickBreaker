@@ -6,7 +6,8 @@ set(SOURCES
   logic/Definitions.h
   logic/GameElements.h
   logic/Input.cpp logic/Input.h
-  logic/NodeHolder.h)
+  logic/NodeHolder.h
+  logic/Globals.cpp logic/Globals.h)
 
 # library and compile option setup
 add_library(mlbb SHARED ${SOURCES})
