@@ -2,6 +2,9 @@
 
 using namespace mlbb;
 
+//! This is used to cap the update simulation time to 50 ms in case the game lags too much
+constexpr auto MAX_ELAPSED_TIME_PER_UPDATE = 0.05f;
+
 constexpr auto NEXT_BALL_DELAY = 0.2f;
 
 constexpr float BALL_SPEED = 600.f;
@@ -45,6 +48,9 @@ void Match::Update(float elapsed, const Input& input)
 {
     if(elapsed <= 0)
         return;
+
+    if(elapsed > MAX_ELAPSED_TIME_PER_UPDATE)
+        elapsed = MAX_ELAPSED_TIME_PER_UPDATE;
 
     TotalElapsed += elapsed;
     CurrentStateElapsed += elapsed;
