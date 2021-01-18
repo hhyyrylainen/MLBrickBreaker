@@ -8,13 +8,13 @@ constexpr auto MAX_ELAPSED_TIME_PER_UPDATE = 0.05f;
 constexpr auto NEXT_BALL_DELAY = 0.2f;
 
 constexpr float BALL_SPEED = 900.f;
-
 constexpr auto BALL_LAUNCH_UPWARDS = -130;
+constexpr auto BALL_OUT_OF_BOUNDS = 10000;
+constexpr bool USE_BALL_PUSH = false;
 
 constexpr auto SIDE_WALL_CALCULATION_THICKNESS = 10000;
 constexpr auto SIDE_WALL_OVERLAP = 100;
 
-constexpr bool USE_BALL_PUSH = false;
 
 Match::Match(int width, int height) : Width(width), Height(height)
 {
@@ -137,8 +137,11 @@ void Match::HandleBallMovement(float elapsed)
         ball.Y = newPos.y;
 
         // Bottom side collision
-        if(ball.Y >= Height - BALL_SIZE) {
-            // Ball went through the bottom of the playing field
+        // And also out of bounds checks
+        if((ball.Y >= Height - BALL_SIZE) ||
+            (ball.Y < -BALL_OUT_OF_BOUNDS || ball.Y > BALL_OUT_OF_BOUNDS ||
+                ball.X < -BALL_OUT_OF_BOUNDS || ball.X > BALL_OUT_OF_BOUNDS)) {
+            // Ball went through the bottom of the playing field (or out of bounds)
             iter = Balls.erase(iter);
             // TODO: handle losing a life
             continue;
