@@ -1,6 +1,26 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/GameControlPanel.gd" type="Script" id=1]
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 2.0
+content_margin_right = 2.0
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+bg_color = Color( 0.0980392, 0.0901961, 0.0901961, 0.717647 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 0.172549, 0.172549, 0.172549, 0.87451 )
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+expand_margin_left = 1.0
+expand_margin_right = 1.0
+expand_margin_top = 1.0
+expand_margin_bottom = 1.0
 
 [node name="GameControlPanel" type="Control"]
 anchor_right = 1.0
@@ -15,15 +35,16 @@ player_label_path = NodePath("PanelContainer/VBoxContainer/HBoxContainer/GameTyp
 [node name="PanelContainer" type="PanelContainer" parent="."]
 margin_right = 28.0
 margin_bottom = 28.0
+custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
-margin_left = 14.0
-margin_top = 14.0
-margin_right = 264.0
-margin_bottom = 84.0
+margin_left = 2.0
+margin_top = 3.0
+margin_right = 252.0
+margin_bottom = 73.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
