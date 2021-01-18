@@ -74,7 +74,7 @@ private:
     float CurrentStateElapsed = 0;
 
     std::mt19937 RandomEngine;
-    std::normal_distribution<float> BallHorizontalDistribution{-100, 100};
+    std::normal_distribution<float> BallHorizontalDistribution{0, 80};
 
     std::vector<Ball> Balls;
     std::vector<Paddle> Paddles;

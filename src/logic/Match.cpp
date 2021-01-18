@@ -7,13 +7,14 @@ constexpr auto MAX_ELAPSED_TIME_PER_UPDATE = 0.05f;
 
 constexpr auto NEXT_BALL_DELAY = 0.2f;
 
-constexpr float BALL_SPEED = 600.f;
+constexpr float BALL_SPEED = 900.f;
 
 constexpr auto BALL_LAUNCH_UPWARDS = -130;
 
 constexpr auto SIDE_WALL_CALCULATION_THICKNESS = 10000;
 constexpr auto SIDE_WALL_OVERLAP = 100;
 
+constexpr bool USE_BALL_PUSH = false;
 
 Match::Match(int width, int height) : Width(width), Height(height)
 {
@@ -32,6 +33,8 @@ Match::Match(Match&& other) : Width(other.Width), Height(other.Height)
     Balls = std::move(other.Balls);
     Paddles = std::move(other.Paddles);
     Bricks = std::move(other.Bricks);
+    RandomEngine = std::move(other.RandomEngine);
+    BallHorizontalDistribution = std::move(other.BallHorizontalDistribution);
 }
 
 Match::Match(const Match& other) : Width(other.Width), Height(other.Height)
@@ -42,6 +45,8 @@ Match::Match(const Match& other) : Width(other.Width), Height(other.Height)
     Balls = other.Balls;
     Paddles = other.Paddles;
     Bricks = other.Bricks;
+    RandomEngine = other.RandomEngine;
+    BallHorizontalDistribution = other.BallHorizontalDistribution;
 }
 
 void Match::Update(float elapsed, const Input& input)
@@ -235,61 +240,62 @@ godot::Vector2 Match::CreateRandomInitialBallDirection()
 
 void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst)
 {
-    const auto objectCenter = collidedAgainst.GetCenterPoint();
-    const auto ballCenter = ball.GetCenterPoint();
-
     godot::Vector2 normal;
 
-    const auto angle = objectCenter.angle_to(ballCenter);
+    // Find the lowest amount of penetration
+    int left = collidedAgainst.X - (ball.X + ball.Width);
+    int top = collidedAgainst.Y - (ball.Y + ball.Height);
+    int right = ball.X - (collidedAgainst.X + collidedAgainst.Width);
+    int bottom = ball.Y - (collidedAgainst.Y + collidedAgainst.Height);
 
-    // TODO: is there a better way to calculate this?
-    if(angle < 0) {
-        // Up angle
-        if(angle > -PI / 4) {
-            // Right
-            normal = godot::Vector2(1, 0);
-        } else if(angle > -PI * (3 / 4.f)) {
-            // Up
-            normal = godot::Vector2(0, -1);
-        } else {
-            // Left
-            normal = godot::Vector2(-1, 0);
-        }
+    // If no penetration, exclude those
+    if(left > 0)
+        left = std::numeric_limits<int>::min();
+    if(right > 0)
+        right = std::numeric_limits<int>::min();
+    if(top > 0)
+        top = std::numeric_limits<int>::min();
+    if(bottom > 0)
+        bottom = std::numeric_limits<int>::min();
+
+    int lowest = std::max(left, std::max(right, std::max(top, bottom)));
+
+    if(left == lowest) {
+        // Left
+        normal = godot::Vector2(-1, 0);
+    } else if(right == lowest) {
+        // Right
+        normal = godot::Vector2(1, 0);
+    } else if(top == lowest) {
+        // Up
+        // TODO: this is not tested as bricks aren't added yet
+        normal = godot::Vector2(0, -1);
     } else {
-        // Down angle
-        if(angle < PI / 4) {
-            // Right
-            normal = godot::Vector2(1, 0);
-        } else if(angle < PI * (3 / 4.f)) {
-            // Down
-            normal = godot::Vector2(0, 1);
-        } else {
-            // Left
-            normal = godot::Vector2(-1, 0);
-        }
+        // Down
+        normal = godot::Vector2(0, 1);
     }
 
     // TODO: normal variability for the paddle based on how center the ball hit
+    // TODO: giving the ball more velocity if hit a moving paddle?
 
-    // TODO: maybe the - should be removed
     ball.Direction = -ball.Direction.reflect(normal);
 
-    return;
+    if(USE_BALL_PUSH) {
+        // Push the ball back by at least 1 pixel to make sure it isn't colliding again
 
-    // Push the ball back by at least 1 pixel to make sure it isn't colliding again
+        int xPush;
+        int yPush;
 
-    int xPush;
-    int yPush;
+        for(int multiplier = 1; multiplier < 100; ++multiplier) {
+            const auto scaled = normal * multiplier;
+            xPush = static_cast<int>(std::round(scaled.x));
+            yPush = static_cast<int>(std::round(scaled.y));
 
-    for(int multiplier = 1; multiplier < 100; ++multiplier) {
-        const auto scaled = normal * multiplier;
-        xPush = static_cast<int>(std::round(scaled.x));
-        yPush = static_cast<int>(std::round(scaled.y));
+            if(xPush != 0 || yPush != 0)
+                break;
+        }
 
-        if(xPush != 0 || yPush != 0)
-            break;
+        ball.X += xPush;
+        ball.Y += yPush;
     }
-
-    ball.X += xPush;
-    ball.Y += yPush;
 }
