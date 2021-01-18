@@ -4,8 +4,9 @@
 #include "GameElements.h"
 #include "Input.h"
 
-#include <vector>
+#include <random>
 #include <tuple>
+#include <vector>
 
 namespace mlbb {
 
@@ -20,7 +21,7 @@ class Match {
 public:
     //! \brief Creates a match with specified size. Due to the way rendering is done in Godot
     //! We don't need to resize even when window size changes
-    Match(int width, int height) : Width(width), Height(height) {}
+    Match(int width, int height);
 
     Match(Match&& other);
     Match(const Match& other);
@@ -50,10 +51,17 @@ private:
     void MoveToState(MatchState newState);
 
     void HandlePaddleMove(float elapsed, const Input& input);
+    void HandleBallMovement(float elapsed);
 
     void HandleStartup();
 
+    void ServeBall();
+
     std::tuple<int, int> CalculatePaddleStartPosition() const;
+    std::tuple<int, int> CalculateBallStartPosition() const;
+    godot::Vector2 CreateRandomInitialBallDirection();
+
+    static void HandleBallCollision(Ball& ball, const GameElement& collidedAgainst);
 
 private:
     const int Width;
@@ -64,6 +72,9 @@ private:
 
     float TotalElapsed = 0;
     float CurrentStateElapsed = 0;
+
+    std::mt19937 RandomEngine;
+    std::normal_distribution<float> BallHorizontalDistribution{-100, 100};
 
     std::vector<Ball> Balls;
     std::vector<Paddle> Paddles;
