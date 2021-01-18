@@ -91,6 +91,15 @@ Alternatively use `make` or visual studio to compile.
 
 You need to change "Editor Settings>Text Editor>Indent>Type" to spaces.
 
+## Debugging
+
+To run the debug build, add `.debug` suffixes in `bin/mlbb.gdnlib`. For example on Linux:
+```
+X11.64="res://bin/x11/libmlbb.debug.so"
+```
+
+
+
 ## Some random notes
 
 GDNative tutorials:
