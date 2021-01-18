@@ -22,4 +22,6 @@ constexpr auto BALL_SIZE = BALL_SIZE_PIXELS;
 
 constexpr auto PADDLE_SPEED = 3500.f;
 
+constexpr float PI = 3.14159265359f;
+
 } // namespace mlbb

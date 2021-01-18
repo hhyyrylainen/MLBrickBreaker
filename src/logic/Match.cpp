@@ -234,23 +234,56 @@ void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst)
 
     godot::Vector2 normal;
 
-    if(ball.Y + ball.Height <= collidedAgainst.Y) {
-        // Top side collision
-        normal = godot::Vector2(0, -1);
-    } else if(ball.Y >= collidedAgainst.Y + collidedAgainst.Height) {
-        // Bottom side
-        normal = godot::Vector2(0, 1);
-    } else if(objectCenter.x < ballCenter.x) {
-        // Left side
-        normal = godot::Vector2(-1, 0);
-    } else /*if(objectCenter.x > ballCenter.x) */ {
-        // Right side
-        normal = godot::Vector2(1, 0);
+    const auto angle = objectCenter.angle_to(ballCenter);
+
+    // TODO: is there a better way to calculate this?
+    if(angle < 0) {
+        // Up angle
+        if(angle > -PI / 4) {
+            // Right
+            normal = godot::Vector2(1, 0);
+        } else if(angle > -PI * (3 / 4.f)) {
+            // Up
+            normal = godot::Vector2(0, -1);
+        } else {
+            // Left
+            normal = godot::Vector2(-1, 0);
+        }
+    } else {
+        // Down angle
+        if(angle < PI / 4) {
+            // Right
+            normal = godot::Vector2(1, 0);
+        } else if(angle < PI * (3 / 4.f)) {
+            // Down
+            normal = godot::Vector2(0, 1);
+        } else {
+            // Left
+            normal = godot::Vector2(-1, 0);
+        }
     }
 
     // TODO: normal variability for the paddle based on how center the ball hit
 
-    ball.Direction = ball.Direction.reflect(normal);
+    // TODO: maybe the - should be removed
+    ball.Direction = -ball.Direction.reflect(normal);
 
-    // TODO: push the ball back by 1 pixel to make sure it isn't colliding next update?
+    return;
+
+    // Push the ball back by at least 1 pixel to make sure it isn't colliding again
+
+    int xPush;
+    int yPush;
+
+    for(int multiplier = 1; multiplier < 100; ++multiplier) {
+        const auto scaled = normal * multiplier;
+        xPush = static_cast<int>(std::round(scaled.x));
+        yPush = static_cast<int>(std::round(scaled.y));
+
+        if(xPush != 0 || yPush != 0)
+            break;
+    }
+
+    ball.X += xPush;
+    ball.Y += yPush;
 }
