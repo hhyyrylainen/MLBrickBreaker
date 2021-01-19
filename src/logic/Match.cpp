@@ -158,7 +158,7 @@ void Match::HandleBallMovement(float elapsed)
 
         // Bottom side collision
         // And also out of bounds checks
-        if((ball.Y >= Height - BALL_SIZE) ||
+        if((ball.Y >= Height) ||
             (ball.Y < -BALL_OUT_OF_BOUNDS || ball.Y > BALL_OUT_OF_BOUNDS ||
                 ball.X < -BALL_OUT_OF_BOUNDS || ball.X > BALL_OUT_OF_BOUNDS)) {
             // Ball went through the bottom of the playing field (or out of bounds)
