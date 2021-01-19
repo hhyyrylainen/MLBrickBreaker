@@ -60,6 +60,10 @@ include_directories(${GODOT_HEADERS_PATH} "${CPP_BINDINGS_PATH}/include"
   "${CPP_BINDINGS_PATH}/include/core" "${CPP_BINDINGS_PATH}/include/gen")
 link_directories("${CPP_BINDINGS_PATH}/bin")
 
+# tensorflow and cppflow
+include_directories("third_party/tensorflow/include" "third_party/cppflow/include")
+link_directories("third_party/tensorflow/lib")
+
 
 # the actual code
 add_subdirectory(src)

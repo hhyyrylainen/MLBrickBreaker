@@ -66,7 +66,7 @@ https://www.tensorflow.org/install/lang_c
 
 and unextract it to `third_party/tensorflow` after that you should
 have: `third_party/tensorflow/lib` as a folder that contains the
-libraries for tensorflow.
+libraries for tensorflow (and a few other files and folders).
 
 
 ### Compile
@@ -124,3 +124,11 @@ recompiling them reload them in the editor, otherwise you will be
 closing and reopening the Godot editor a lot.
 
 
+Tensorflow resources:
+- https://github.com/serizba/cppflow/tree/cppflow2
+- https://github.com/Neargye/hello_tf_c_api
+
+
+For export from godot to work, the libs in
+`third_party/tensorflow/lib` probably need to be added to
+`bin/mlbb.gdnlib`.
