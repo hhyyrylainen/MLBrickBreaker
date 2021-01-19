@@ -7,6 +7,7 @@
 #include <random>
 #include <tuple>
 #include <vector>
+#include <optional>
 
 namespace mlbb {
 
@@ -51,6 +52,7 @@ private:
     void MoveToState(MatchState newState);
 
     void HandlePaddleMove(float elapsed, const Input& input);
+    void ResetPaddleVelocity();
     void HandleBallMovement(float elapsed);
     void HandleBrickBreaking();
 
@@ -63,7 +65,8 @@ private:
     std::tuple<int, int> CalculateBallStartPosition() const;
     godot::Vector2 CreateRandomInitialBallDirection();
 
-    static void HandleBallCollision(Ball& ball, const GameElement& collidedAgainst);
+    static void HandleBallCollision(
+        Ball& ball, const GameElement& collidedAgainst, std::optional<godot::Vector2> extraVelocity = {});
 
 private:
     const int Width;

@@ -2,8 +2,8 @@
 
 using namespace mlbb;
 
-//! This is used to cap the update simulation time to 50 ms in case the game lags too much
-constexpr auto MAX_ELAPSED_TIME_PER_UPDATE = 0.05f;
+//! This is used to cap the update simulation time to 30 ms in case the game lags too much
+constexpr auto MAX_ELAPSED_TIME_PER_UPDATE = 0.03f;
 
 constexpr auto NEXT_BALL_DELAY = 0.2f;
 
@@ -15,6 +15,7 @@ constexpr bool USE_BALL_PUSH = false;
 constexpr auto SIDE_WALL_CALCULATION_THICKNESS = 10000;
 constexpr auto SIDE_WALL_OVERLAP = 100;
 
+constexpr auto PADDLE_VELOCITY_TRANSFER_TO_BALL_FRACTION = 0.2f;
 
 Match::Match(int width, int height) : Width(width), Height(height)
 {
@@ -100,6 +101,8 @@ void Match::MoveToState(MatchState newState)
 
 void Match::HandlePaddleMove(float elapsed, const Input& input)
 {
+    ResetPaddleVelocity();
+
     switch(State) {
     case MatchState::Starting:
     case MatchState::Ended: return;
@@ -117,6 +120,8 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
     }
 
     for(auto& paddle : Paddles) {
+        const auto previous = paddle.PositionAsVector();
+
         paddle.X += static_cast<int>(movement);
 
         if(paddle.X < 0) {
@@ -124,6 +129,15 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
         } else if(paddle.X + PADDLE_WIDTH > Width) {
             paddle.X = Width - PADDLE_WIDTH;
         }
+
+        paddle.Velocity = (paddle.PositionAsVector() - previous) / elapsed;
+    }
+}
+
+void Match::ResetPaddleVelocity()
+{
+    for(auto& paddle : Paddles) {
+        paddle.Velocity = godot::Vector2(0, 0);
     }
 }
 
@@ -178,7 +192,8 @@ void Match::HandleBallMovement(float elapsed)
         // Paddle collision
         for(const auto& paddle : Paddles) {
             if(ball.OverlapsWith(paddle)) {
-                HandleBallCollision(ball, paddle);
+                HandleBallCollision(
+                    ball, paddle, paddle.Velocity * PADDLE_VELOCITY_TRANSFER_TO_BALL_FRACTION);
             }
         }
 
@@ -214,7 +229,7 @@ void Match::HandleBrickBreaking()
     if(State == MatchState::Ended || State == MatchState::Starting)
         return;
 
-    for(auto* brick : HitBricks) {
+    for(auto brick : HitBricks) {
         // Find the matching brick to destroy
         for(auto iter = Bricks.begin(); iter != Bricks.end(); ++iter) {
             if(&*iter == brick) {
@@ -260,7 +275,8 @@ void Match::SetupLevel()
 
     for(int row = 0; row < 5; ++row) {
         for(int column = 0; column < columns; ++column) {
-            Bricks.emplace_back(bricksStartX + (column * BRICK_WIDTH), bricksStartY + (row * BRICK_HEIGHT));
+            Bricks.emplace_back(
+                bricksStartX + (column * BRICK_WIDTH), bricksStartY + (row * BRICK_HEIGHT));
         }
     }
 }
@@ -290,7 +306,8 @@ godot::Vector2 Match::CreateRandomInitialBallDirection()
         .normalized();
 }
 
-void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst)
+void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
+    std::optional<godot::Vector2> extraVelocity)
 {
     godot::Vector2 normal;
 
@@ -328,7 +345,6 @@ void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst)
     }
 
     // TODO: normal variability for the paddle based on how center the ball hit
-    // TODO: giving the ball more velocity if hit a moving paddle?
 
     ball.Direction = -ball.Direction.reflect(normal);
 
@@ -349,5 +365,11 @@ void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst)
 
         ball.X += xPush;
         ball.Y += yPush;
+    }
+
+    // Extra velocity when hitting a moving paddle to make the player have more impact on the
+    // ball direction
+    if(extraVelocity) {
+        ball.Direction = ((ball.Direction * BALL_SPEED) + *extraVelocity).normalized();
     }
 }

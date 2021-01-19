@@ -59,6 +59,7 @@ public:
     Paddle(int x, int y) : GameElement(x, y, PADDLE_WIDTH, PADDLE_HEIGHT) {}
 
     PaddleSize Size = PaddleSize::Normal;
+    godot::Vector2 Velocity = godot::Vector2(0, 0);
 };
 
 struct Ball : public GameElement {
