@@ -10,12 +10,14 @@ constexpr auto NEXT_BALL_DELAY = 0.2f;
 constexpr float BALL_SPEED = 900.f;
 constexpr auto BALL_LAUNCH_UPWARDS = -130;
 constexpr auto BALL_OUT_OF_BOUNDS = 10000;
-constexpr bool USE_BALL_PUSH = false;
+constexpr bool USE_BALL_PUSH = true;
 
 constexpr auto SIDE_WALL_CALCULATION_THICKNESS = 10000;
 constexpr auto SIDE_WALL_OVERLAP = 100;
 
 constexpr auto PADDLE_VELOCITY_TRANSFER_TO_BALL_FRACTION = 0.2f;
+
+constexpr bool BALL_CAN_BREAK_ONLY_ONE_BRICK_PER_UPDATE = true;
 
 Match::Match(int width, int height) : Width(width), Height(height)
 {
@@ -201,7 +203,10 @@ void Match::HandleBallMovement(float elapsed)
         for(const auto& brick : Bricks) {
             if(ball.OverlapsWith(brick)) {
                 HandleBallCollision(ball, brick);
-                HitBricks.push_back(&brick);
+
+                if(!BALL_CAN_BREAK_ONLY_ONE_BRICK_PER_UPDATE || HitBricks.empty()) {
+                    HitBricks.push_back(&brick);
+                }
             }
         }
 
