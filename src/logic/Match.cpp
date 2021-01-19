@@ -12,7 +12,9 @@ constexpr auto BALL_LAUNCH_UPWARDS = -130;
 constexpr auto BALL_OUT_OF_BOUNDS = 10000;
 constexpr bool USE_BALL_PUSH = true;
 constexpr bool BALL_CAN_BREAK_ONLY_ONE_BRICK_PER_UPDATE = true;
-constexpr float BALL_HORIZONTAL_STUCK_THRESHOLD = 0.5f;
+constexpr float BALL_HORIZONTAL_STUCK_THRESHOLD = 0.15f;
+constexpr auto BALL_HORIZONTAL_STUCK_NUDGE_DEFAULT = -0.0035f;
+constexpr auto BALL_HORIZONTAL_STUCK_NUDGE_MULTIPLIER = 2.5f;
 
 constexpr auto PADDLE_VELOCITY_TRANSFER_TO_BALL_FRACTION = 0.2f;
 
@@ -223,7 +225,14 @@ void Match::HandleBallMovement(float elapsed)
 
         // If stuck exactly horizontal, add a bit of upwards motion
         if(std::abs(ball.Direction.y) < BALL_HORIZONTAL_STUCK_THRESHOLD) {
-            ball.Direction = (ball.Direction + godot::Vector2(0, -0.5)).normalized();
+
+            auto nudge = ball.Direction;
+            nudge.y *= BALL_HORIZONTAL_STUCK_NUDGE_MULTIPLIER;
+
+            if(std::abs(nudge.y) < std::abs(BALL_HORIZONTAL_STUCK_NUDGE_DEFAULT))
+                nudge.y = BALL_HORIZONTAL_STUCK_NUDGE_DEFAULT;
+
+            ball.Direction = (ball.Direction + nudge).normalized();
         }
 
         ++iter;
