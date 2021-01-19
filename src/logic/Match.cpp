@@ -35,6 +35,7 @@ Match::Match(Match&& other) : Width(other.Width), Height(other.Height)
     Bricks = std::move(other.Bricks);
     RandomEngine = std::move(other.RandomEngine);
     BallHorizontalDistribution = std::move(other.BallHorizontalDistribution);
+    HitBricks = std::move(other.HitBricks);
 }
 
 Match::Match(const Match& other) : Width(other.Width), Height(other.Height)
@@ -47,6 +48,7 @@ Match::Match(const Match& other) : Width(other.Width), Height(other.Height)
     Bricks = other.Bricks;
     RandomEngine = other.RandomEngine;
     BallHorizontalDistribution = other.BallHorizontalDistribution;
+    HitBricks = other.HitBricks;
 }
 
 void Match::Update(float elapsed, const Input& input)
@@ -59,6 +61,8 @@ void Match::Update(float elapsed, const Input& input)
 
     TotalElapsed += elapsed;
     CurrentStateElapsed += elapsed;
+
+    HitBricks.clear();
 
     HandlePaddleMove(elapsed, input);
     HandleBallMovement(elapsed);
@@ -84,6 +88,8 @@ void Match::Update(float elapsed, const Input& input)
     }
     case MatchState::Ended: break;
     }
+
+    HandleBrickBreaking();
 }
 
 void Match::MoveToState(MatchState newState)
@@ -169,14 +175,22 @@ void Match::HandleBallMovement(float elapsed)
                           Height + SIDE_WALL_OVERLAP * 2));
         }
 
+        // Paddle collision
         for(const auto& paddle : Paddles) {
             if(ball.OverlapsWith(paddle)) {
                 HandleBallCollision(ball, paddle);
             }
         }
 
-        // TODO: brick collisions
+        // Brick collision
+        for(const auto& brick : Bricks) {
+            if(ball.OverlapsWith(brick)) {
+                HandleBallCollision(ball, brick);
+                HitBricks.push_back(&brick);
+            }
+        }
 
+        // Ball to ball collision
         for(auto iter2 = Balls.begin(); iter2 != Balls.end(); ++iter2) {
             if(iter == iter2)
                 continue;
@@ -192,6 +206,25 @@ void Match::HandleBallMovement(float elapsed)
     // Start serving next ball if all balls are gone
     if(Balls.empty() && State == MatchState::Playing) {
         MoveToState(MatchState::WaitingForNextServe);
+    }
+}
+
+void Match::HandleBrickBreaking()
+{
+    if(State == MatchState::Ended || State == MatchState::Starting)
+        return;
+
+    for(auto* brick : HitBricks) {
+        // Find the matching brick to destroy
+        for(auto iter = Bricks.begin(); iter != Bricks.end(); ++iter) {
+            if(&*iter == brick) {
+                // TODO: break animation?
+                Bricks.erase(iter);
+                break;
+            }
+        }
+
+        // TODO: add score
     }
 }
 
@@ -211,9 +244,25 @@ void Match::HandleStartup()
         Paddles.emplace_back(x, y);
     }
 
-    // TODO: create bricks
+    SetupLevel();
 
     MoveToState(MatchState::Serving);
+}
+
+void Match::SetupLevel()
+{
+    // TODO: make different brick configurations
+
+    const auto columns = Width / BRICK_WIDTH;
+
+    const auto bricksStartY = 80;
+    const auto bricksStartX = 0;
+
+    for(int row = 0; row < 5; ++row) {
+        for(int column = 0; column < columns; ++column) {
+            Bricks.emplace_back(bricksStartX + (column * BRICK_WIDTH), bricksStartY + (row * BRICK_HEIGHT));
+        }
+    }
 }
 
 void Match::ServeBall()

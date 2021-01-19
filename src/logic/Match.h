@@ -52,8 +52,10 @@ private:
 
     void HandlePaddleMove(float elapsed, const Input& input);
     void HandleBallMovement(float elapsed);
+    void HandleBrickBreaking();
 
     void HandleStartup();
+    void SetupLevel();
 
     void ServeBall();
 
@@ -79,6 +81,9 @@ private:
     std::vector<Ball> Balls;
     std::vector<Paddle> Paddles;
     std::vector<Brick> Bricks;
+
+    //! Bricks that were hit this frame and should be destroyed
+    std::vector<const Brick*> HitBricks;
 };
 
 } // namespace mlbb
