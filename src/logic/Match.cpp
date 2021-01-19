@@ -7,7 +7,6 @@ constexpr auto MAX_ELAPSED_TIME_PER_UPDATE = 0.03f;
 
 constexpr auto NEXT_BALL_DELAY = 0.25f;
 
-constexpr float BALL_SPEED = 900.f;
 constexpr auto BALL_LAUNCH_UPWARDS = -130;
 constexpr auto BALL_OUT_OF_BOUNDS = 10000;
 constexpr bool USE_BALL_PUSH = true;

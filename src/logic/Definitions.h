@@ -20,7 +20,8 @@ constexpr auto BRICK_WIDTH = BRICK_WIDTH_PIXELS;
 constexpr auto BRICK_HEIGHT = BRICK_HEIGHT_PIXELS;
 constexpr auto BALL_SIZE = BALL_SIZE_PIXELS;
 
-constexpr auto PADDLE_SPEED = 2700.f;
+constexpr float PADDLE_SPEED = 2700.f;
+constexpr float BALL_SPEED = 1100.f;
 
 constexpr float PI = 3.14159265359f;
 
