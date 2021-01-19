@@ -4,6 +4,7 @@
 #include "Globals.h"
 
 #include <Viewport.hpp>
+#include <tensorflow/c/c_api.h>
 
 using namespace mlbb;
 using namespace godot;
@@ -22,6 +23,8 @@ void Game::_init() {}
 
 void Game::_ready()
 {
+    CheckTensorFlow();
+
     // Read globals
     auto globals = get_node<Globals>("/root/Globals");
     PlayerControlled = globals->GetIsPlayer();
@@ -113,4 +116,9 @@ void Game::DrawBalls(const std::vector<Ball>& balls)
 void Game::DrawBricks(const std::vector<Brick>& bricks)
 {
     DrawHelper(bricks, *Bricks);
+}
+
+void Game::CheckTensorFlow()
+{
+    godot::Godot::print(godot::String("TensorFlow version: ") + TF_Version());
 }

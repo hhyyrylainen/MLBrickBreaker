@@ -18,9 +18,10 @@ if(WIN32)
 
   # Just to make sure things are consistent with the scons stuff
   target_compile_definitions(mlbb PRIVATE WINDOWS _CRT_SECURE_NO_WARNINGS)
-  
+
   if(MSVC)
-    # target_compile_options(mlbb PRIVATE)
+    # Just to be safe with tensorflow
+    target_compile_definitions(mlbb PRIVATE COMPILER_MSVC)
   else()
     # target_compile_options(mlbb PRIVATE)
   endif()

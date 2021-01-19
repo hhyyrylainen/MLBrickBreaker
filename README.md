@@ -127,6 +127,7 @@ closing and reopening the Godot editor a lot.
 Tensorflow resources:
 - https://github.com/serizba/cppflow/tree/cppflow2
 - https://github.com/Neargye/hello_tf_c_api
+- https://github.com/tensorflow/tensorflow/blob/master/tensorflow/c/c_api.h
 
 
 For export from godot to work, the libs in
