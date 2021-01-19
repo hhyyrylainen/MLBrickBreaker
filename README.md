@@ -42,9 +42,9 @@ gives output like that (here the mono version is used but that is not
 required for this project).
 
 
-### First time build commands
+### Building gdnative library
 
-Commands for setting up remainder of things (replace ALL_CAPITAL with
+Commands to finish gdnative setup (replace ALL_CAPITAL with
 right values for your system, refer to:
 https://docs.godotengine.org/en/3.2/tutorials/plugins/gdnative/gdnative-cpp-example.html
 also replace the number after `-j` with your number of CPU threads):
@@ -58,6 +58,16 @@ scons platform=PLATFORM generate_bindings=yes -j20 use_custom_api_file=yes custo
 scons platform=PLATFORM generate_bindings=yes -j20 use_custom_api_file=yes custom_api_file=../../build/api.json bits=64 target=debug
 cd ../..
 ```
+
+### Tensorflow
+
+First grab the library (with GPU support) for your platform from:
+https://www.tensorflow.org/install/lang_c
+
+and unextract it to `third_party/tensorflow` after that you should
+have: `third_party/tensorflow/lib` as a folder that contains the
+libraries for tensorflow.
+
 
 ### Compile
 

@@ -7,3 +7,7 @@
 /bin/win64/
 .vs
 .history
+/third_party/tensorflow/LICENSE
+/third_party/tensorflow/THIRD_PARTY_TF_C_LICENSES
+/third_party/tensorflow/include/
+/third_party/tensorflow/lib/
