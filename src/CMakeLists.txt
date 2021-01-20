@@ -35,6 +35,8 @@ else()
     debug libgodot-cpp.linux.debug.${BITNESS}.a)  
 endif()
 
+target_link_libraries(mlbb PRIVATE neat)
+
 set_target_properties(mlbb PROPERTIES
   CXX_STANDARD 17
   CXX_EXTENSIONS OFF)

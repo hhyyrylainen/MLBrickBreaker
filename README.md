@@ -114,3 +114,8 @@ recompiling them reload them in the editor, otherwise you will be
 closing and reopening the Godot editor a lot.
 
 
+NEAT resources:
+- http://nn.cs.utexas.edu/?neat-c
+- http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf
+- https://en.wikipedia.org/wiki/Neuroevolution
+- https://en.wikipedia.org/wiki/Neuroevolution_of_augmenting_topologies
