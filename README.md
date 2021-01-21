@@ -119,3 +119,50 @@ NEAT resources:
 - http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf
 - https://en.wikipedia.org/wiki/Neuroevolution
 - https://en.wikipedia.org/wiki/Neuroevolution_of_augmenting_topologies
+- http://www.cs.ucf.edu/~kstanley/neat.html
+
+
+## Starting networks
+
+startgenes, commented (when copying to config remove from `#` to line ends):
+
+```
+genomestart 1
+trait 1 0.1 0 0 0 0 0 0 0
+node 1 0 1 1 # input (paddle x)
+node 2 0 1 1 # input (ball x)
+node 3 0 1 1 # input (ball y)
+node 4 0 1 1 # input (lowest brick x)
+node 5 0 1 1 # input (lowest brick y)
+node 6 0 0 2 # output (left)
+node 7 0 0 2 # output (right)
+node 8 0 0 2 # output (special)
+node 9 0 0 3 # hidden
+gene 1 1 6 0.0 0 1 0 1 # link 1->6
+gene 1 1 9 0.0 0 1 0 1 # link 1->9
+gene 1 2 6 0.0 0 1 0 1 # link 2->6
+gene 1 3 7 0.0 0 1 0 1 # link 3->7
+gene 1 4 9 0.0 0 1 0 1 # link 4->9
+gene 1 5 9 0.0 0 1 0 1 # link 5->9
+gene 1 9 7 0.0 0 3 0 1 # link 9->7
+genomeend 1
+```
+
+The syntax is:
+
+Trait (placeholder, always use this):
+```
+trait 1 0.1 0 0 0 0 0 0 0
+```
+
+Node:
+```
+node NodeID TraitNum (NodeType: 0 - neuron, 1 - sensor (can be used for input) (NodeLabel: 0 - hidden, 1 - input, 2 - output, 3 -bias)
+```
+
+Gene:
+```
+gene TraitNum InputNodeID OutputNodeID Weight IsRecurrent InnovationNumber MutationNumber Enabled
+```
+
+For InnovationNum just use incrementing numbers.
