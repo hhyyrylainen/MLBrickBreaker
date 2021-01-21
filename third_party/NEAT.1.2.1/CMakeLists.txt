@@ -19,3 +19,5 @@ SET(neat_sources gene.h gene.cpp
 
 # ADD_EXECUTABLE( neat ${neat_sources} )
 add_library(neat STATIC ${neat_sources})
+set_property(TARGET neat PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_include_directories(neat PUBLIC .)

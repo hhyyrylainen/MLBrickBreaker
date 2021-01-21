@@ -35,6 +35,8 @@ private:
     void DrawBalls(const std::vector<Ball>& balls);
     void DrawBricks(const std::vector<Brick>& bricks);
 
+    void LoadNEAT();
+
 private:
     godot::Ref<godot::PackedScene> BrickScene = nullptr;
     godot::Ref<godot::PackedScene> BallScene = nullptr;

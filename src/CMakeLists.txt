@@ -32,8 +32,11 @@ else()
   
   # TODO: mac support    
   target_link_libraries(mlbb PRIVATE optimized libgodot-cpp.linux.release.${BITNESS}.a
-    debug libgodot-cpp.linux.debug.${BITNESS}.a)  
+    debug libgodot-cpp.linux.debug.${BITNESS}.a)
 endif()
+
+# Link time optimization
+set_property(TARGET mlbb PROPERTY INTERPROCEDURAL_OPTIMIZATION ON)
 
 target_link_libraries(mlbb PRIVATE neat)
 
