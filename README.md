@@ -54,7 +54,7 @@ mkdir build
 godot --gdnative-generate-json-api build/api.json
 cd third_party/godot-cpp
 scons platform=PLATFORM generate_bindings=yes -j20 use_custom_api_file=yes custom_api_file=../../build/api.json bits=64 target=release
-# if don't want to build in debug mode this is optional 
+# if don't want to build in debug mode this may not be needed:
 scons platform=PLATFORM generate_bindings=yes -j20 use_custom_api_file=yes custom_api_file=../../build/api.json bits=64 target=debug
 cd ../..
 ```
@@ -154,7 +154,7 @@ trait 1 0.1 0 0 0 0 0 0 0
 
 Node:
 ```
-node NodeID TraitNum (NodeType: 0 - neuron, 1 - sensor (can be used for input) (NodeLabel: 0 - hidden, 1 - input, 2 - output, 3 -bias)
+node NodeID TraitNum (NodeType: 0 - neuron, 1 - sensor (can be used for input) (NodeLabel: 0 - hidden, 1 - input, 2 - output, 3 - bias)
 ```
 
 Gene:
