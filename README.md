@@ -137,14 +137,11 @@ node 5 0 1 1 # input (lowest brick y)
 node 6 0 0 2 # output (left)
 node 7 0 0 2 # output (right)
 node 8 0 0 2 # output (special)
-node 9 0 0 3 # hidden
 gene 1 1 6 0.0 0 1 0 1 # link 1->6
-gene 1 1 9 0.0 0 1 0 1 # link 1->9
 gene 1 2 6 0.0 0 1 0 1 # link 2->6
 gene 1 3 7 0.0 0 1 0 1 # link 3->7
-gene 1 4 9 0.0 0 1 0 1 # link 4->9
-gene 1 5 9 0.0 0 1 0 1 # link 5->9
-gene 1 9 7 0.0 0 3 0 1 # link 9->7
+gene 1 4 9 0.0 0 1 0 1 # link 4->6
+gene 1 5 9 0.0 0 1 0 1 # link 5->7
 genomeend 1
 ```
 
