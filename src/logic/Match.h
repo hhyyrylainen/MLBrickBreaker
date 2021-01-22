@@ -4,10 +4,10 @@
 #include "GameElements.h"
 #include "Input.h"
 
+#include <optional>
 #include <random>
 #include <tuple>
 #include <vector>
-#include <optional>
 
 namespace mlbb {
 
@@ -33,8 +33,25 @@ public:
     //! \brief Updates the game state
     void Update(float elapsed, const Input& input);
 
+    bool HasEnded() const
+    {
+        return State == MatchState::Ended;
+    }
+
+    float GetElapsedTime() const
+    {
+        return TotalElapsed;
+    }
+
+    void Forfeit()
+    {
+        MoveToState(MatchState::Ended);
+    }
+
 
     // None of the objects in these should be modified, only used for drawing
+    // And for AI to read their state, might be a bit cleaner if that had separate named
+    // methods for it
     const std::vector<Ball>& GetBallsForDrawing() const
     {
         return Balls;
@@ -65,8 +82,8 @@ private:
     std::tuple<int, int> CalculateBallStartPosition() const;
     godot::Vector2 CreateRandomInitialBallDirection();
 
-    static void HandleBallCollision(
-        Ball& ball, const GameElement& collidedAgainst, std::optional<godot::Vector2> extraVelocity = {});
+    static void HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
+        std::optional<godot::Vector2> extraVelocity = {});
 
 private:
     const int Width;

@@ -12,6 +12,12 @@ public:
 
 class ProgrammaticInput : public Input {
 public:
+    ProgrammaticInput() = default;
+
+    ProgrammaticInput(bool left, bool right, bool special) :
+        Left(left), Right(right), Special(special)
+    {}
+
     bool GetLeftPressed() const override
     {
         return Left;

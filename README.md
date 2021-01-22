@@ -140,8 +140,8 @@ node 8 0 0 2 # output (special)
 gene 1 1 6 0.0 0 1 0 1 # link 1->6
 gene 1 2 6 0.0 0 1 0 1 # link 2->6
 gene 1 3 7 0.0 0 1 0 1 # link 3->7
-gene 1 4 9 0.0 0 1 0 1 # link 4->6
-gene 1 5 9 0.0 0 1 0 1 # link 5->7
+gene 1 4 6 0.0 0 1 0 1 # link 4->6
+gene 1 5 7 0.0 0 1 0 1 # link 5->7
 genomeend 1
 ```
 

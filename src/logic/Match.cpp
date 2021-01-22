@@ -64,7 +64,10 @@ void Match::Update(float elapsed, const Input& input)
     if(elapsed > MAX_ELAPSED_TIME_PER_UPDATE)
         elapsed = MAX_ELAPSED_TIME_PER_UPDATE;
 
-    TotalElapsed += elapsed;
+    // Time doesn't pass once match has ended
+    if(State != MatchState::Ended)
+        TotalElapsed += elapsed;
+
     CurrentStateElapsed += elapsed;
 
     HitBricks.clear();

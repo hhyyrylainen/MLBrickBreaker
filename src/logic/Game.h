@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AITrainer.h"
 #include "Match.h"
 #include "NodeHolder.h"
 
@@ -13,6 +14,7 @@
 #include <optional>
 
 namespace mlbb {
+
 
 //! \brief Main class handling the game scene
 class Game : public godot::Node {
@@ -54,6 +56,7 @@ private:
     float TimePassed = 0.f;
 
     std::shared_ptr<Match> ActiveMatch;
+    std::optional<AITrainer> AI;
 };
 
 } // namespace mlbb
