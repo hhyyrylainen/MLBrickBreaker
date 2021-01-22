@@ -13,6 +13,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
+// Modified version for MLBB
+
 #ifndef _INNOVATION_H_
 #define _INNOVATION_H_
 
@@ -37,10 +40,6 @@ namespace NEAT {
 	// ------------------------------------------------------------ 
 	class Innovation {
 	private:
-		enum innovtype {
-			NEWNODE = 0,
-			NEWLINK = 1
-		};
 
 		//typedef int innovtype;
 		//const int NEWNODE = 0;

@@ -13,6 +13,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
+// Modified version for MLBB
+
 #include "nnode.h"
 #include <iostream>
 #include <sstream>
@@ -156,7 +159,7 @@ NNode::~NNode() {
 }
 
 //Returns the type of the node, NEURON or SENSOR
-const nodetype NNode::get_type() {
+nodetype NNode::get_type() {
 	return type;
 }
 

@@ -13,6 +13,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
+// Modified version for MLBB
+
 #ifndef _NNODE_H_
 #define _NNODE_H_
 
@@ -133,7 +136,7 @@ namespace NEAT {
 		double get_active_out_td();
 
 		// Returns the type of the node, NEURON or SENSOR
-		const nodetype get_type();
+		nodetype get_type();
 
 		// Allows alteration between NEURON and SENSOR.  Returns its argument
 		nodetype set_type(nodetype);

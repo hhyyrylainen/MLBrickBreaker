@@ -12,3 +12,4 @@ CHANGE HISTORY
  - Fix a performance regression with the Markovian double pole balancing experiment, mainly by increasing weight caps.
  - Consider failed runs when printing the average number of evaluations.
 
+1/2021 - changed for inclusion with MLBrickBreaker
