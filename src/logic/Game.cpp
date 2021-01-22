@@ -4,6 +4,7 @@
 #include "Globals.h"
 
 #include <Viewport.hpp>
+#include <neat.h>
 
 using namespace mlbb;
 using namespace godot;
@@ -50,8 +51,12 @@ void Game::_ready()
     if(PlayerControlled) {
         ActiveMatch = std::make_shared<Match>(windowSize.x, windowSize.y);
     } else {
-        // TODO: AI training
-        ActiveMatch = std::make_shared<Match>(windowSize.x, windowSize.y);
+        // Load AI
+        LoadNEAT();
+        int startingPopulation = 1000;
+        AI.emplace(windowSize.x, windowSize.y, startingPopulation);
+
+        AI->Begin();
     }
 
     ControlPanel->set("is_player", PlayerControlled);
@@ -64,10 +69,10 @@ void Game::_process(float delta)
             ActiveMatch->Update(delta, UserInput());
         }
     } else {
-        // TODO: run AI
-        if(ActiveMatch) {
-            ActiveMatch->Update(delta, ProgrammaticInput());
-        }
+        // Run AI
+        AI->Update(delta);
+
+        ActiveMatch = AI->GetAIMatch();
     }
 
     DrawGame();
@@ -113,4 +118,10 @@ void Game::DrawBalls(const std::vector<Ball>& balls)
 void Game::DrawBricks(const std::vector<Brick>& bricks)
 {
     DrawHelper(bricks, *Bricks);
+}
+
+void Game::LoadNEAT()
+{
+    // TODO: this will break in packaged game
+    NEAT::load_neat_params("config/NeatParams.ne", false);
 }

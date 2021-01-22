@@ -60,6 +60,7 @@ include_directories(${GODOT_HEADERS_PATH} "${CPP_BINDINGS_PATH}/include"
   "${CPP_BINDINGS_PATH}/include/core" "${CPP_BINDINGS_PATH}/include/gen")
 link_directories("${CPP_BINDINGS_PATH}/bin")
 
+add_subdirectory(third_party/NEAT.1.2.1)
 
 # the actual code
 add_subdirectory(src)

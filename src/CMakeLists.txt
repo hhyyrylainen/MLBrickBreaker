@@ -7,7 +7,8 @@ set(SOURCES
   logic/GameElements.h
   logic/Input.cpp logic/Input.h
   logic/NodeHolder.h
-  logic/Globals.cpp logic/Globals.h)
+  logic/Globals.cpp logic/Globals.h
+  logic/AITrainer.cpp logic/AITrainer.h)
 
 # library and compile option setup
 add_library(mlbb SHARED ${SOURCES})
@@ -32,8 +33,13 @@ else()
   
   # TODO: mac support    
   target_link_libraries(mlbb PRIVATE optimized libgodot-cpp.linux.release.${BITNESS}.a
-    debug libgodot-cpp.linux.debug.${BITNESS}.a)  
+    debug libgodot-cpp.linux.debug.${BITNESS}.a)
 endif()
+
+# Link time optimization
+set_property(TARGET mlbb PROPERTY INTERPROCEDURAL_OPTIMIZATION ON)
+
+target_link_libraries(mlbb PRIVATE neat)
 
 set_target_properties(mlbb PROPERTIES
   CXX_STANDARD 17

@@ -23,6 +23,9 @@ constexpr auto BALL_SIZE = BALL_SIZE_PIXELS;
 constexpr float PADDLE_SPEED = 2700.f;
 constexpr float BALL_SPEED = 1100.f;
 
+//! How long the AI is allowed to play before ending the match automatically
+constexpr float MAX_AI_PLAY_TIME = 120;
+
 constexpr float PI = 3.14159265359f;
 
 } // namespace mlbb
