@@ -55,7 +55,8 @@ public:
 
     int GetTimedScore() const
     {
-        return std::max(0, static_cast<int>(GetScore() * ELAPSED_TIME_SCORE_PENALTY));
+        return std::max(
+            0, static_cast<int>(GetScore() - (TotalElapsed * ELAPSED_TIME_SCORE_PENALTY)));
     }
 
     int GetLivesLeft() const
