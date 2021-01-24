@@ -242,7 +242,14 @@ void Match::HandleBallMovement(float elapsed)
 
     // Start serving next ball if all balls are gone
     if(Balls.empty() && State == MatchState::Playing) {
-        MoveToState(MatchState::WaitingForNextServe);
+        --LivesLeft;
+
+        if(LivesLeft >= 0) {
+            MoveToState(MatchState::WaitingForNextServe);
+        } else {
+            // Ran out of lives
+            MoveToState(MatchState::Ended);
+        }
     }
 }
 
@@ -257,6 +264,7 @@ void Match::HandleBrickBreaking()
             if(&*iter == brick) {
                 // TODO: break animation?
                 Bricks.erase(iter);
+                Score += SCORE_PER_BROKEN_BRICK;
                 break;
             }
         }
@@ -272,7 +280,7 @@ void Match::HandleStartup()
     Bricks.clear();
 
     // Paddles are not cleared so that the game remembers their position between levels
-    if(Paddles.size() > 1) {
+    if(!Paddles.empty()) {
         while(Paddles.size() > 1) {
             Paddles.pop_back();
         }
