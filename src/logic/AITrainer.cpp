@@ -3,6 +3,8 @@
 #include <genome.h>
 #include <population.h>
 
+#include <array>
+
 using namespace mlbb;
 
 AITrainer::AITrainer(int width, int height, int startingPopulationSize) :
