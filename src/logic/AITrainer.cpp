@@ -72,9 +72,9 @@ void AITrainer::Update(float delta)
             run.PlayingMatch->Forfeit();
 
         // Record score when match ends
-        // TODO: proper scoring, for now how long the AI was alive is tracked
         if(run.PlayingMatch->HasEnded()) {
-            run.AI->fitness = run.PlayingMatch->GetElapsedTime();
+            // fitness is alive time + timed score
+            run.AI->fitness = run.PlayingMatch->GetTimedScore() + run.PlayingMatch->GetElapsedTime();
         }
     }
 
