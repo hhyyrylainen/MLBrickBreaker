@@ -9,6 +9,7 @@ class Organism;
 } // namespace NEAT
 
 #include <memory>
+#include <tuple>
 
 namespace mlbb {
 
@@ -28,7 +29,14 @@ public:
 
     void Update(float delta);
 
-    std::shared_ptr<Match> GetAIMatch();
+    //! \brief Returns a match for the user to view, second value is the AI identifier
+    //! (basically just an index for now)
+    std::tuple<std::shared_ptr<Match>, int> GetAIMatch();
+
+    int GetGenerationNumber() const
+    {
+        return CurrentGeneration;
+    }
 
 private:
     void SetupGenerationMatches();

@@ -137,19 +137,23 @@ void AITrainer::PerformAIThinking(
     output = ProgrammaticInput(left, right, special);
 }
 
-std::shared_ptr<Match> AITrainer::GetAIMatch()
+std::tuple<std::shared_ptr<Match>, int> AITrainer::GetAIMatch()
 {
+    int index = 0;
+
     // For now just the first (alive one is shown, or the last one if nothing else)
     for(const auto& run : CurrentRuns) {
         if(!run.PlayingMatch->HasEnded())
-            return run.PlayingMatch;
+            return std::make_tuple(run.PlayingMatch, index);
+
+        ++index;
     }
 
     if(!CurrentRuns.empty())
-        return CurrentRuns.back().PlayingMatch;
+        return std::make_tuple(CurrentRuns.back().PlayingMatch, CurrentRuns.size() - 1);
 
     // No good match to show
-    return nullptr;
+    return std::make_tuple(nullptr, -1);
 }
 
 double AITrainer::GetScaledPaddleX(const Match& match) const

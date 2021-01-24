@@ -53,6 +53,10 @@ void Game::_ready()
     } else {
         // Load AI
         LoadNEAT();
+
+        // The used NEAT params are optimized for 1000, so that's used for now.
+        // At least on my computer (hh) I could probably run around 5000 population without
+        // requiring threading to speed things up.
         int startingPopulation = 1000;
         AI.emplace(windowSize.x, windowSize.y, startingPopulation);
 
@@ -60,6 +64,7 @@ void Game::_ready()
     }
 
     ControlPanel->set("is_player", PlayerControlled);
+    ControlPanel->call("on_start");
 }
 
 void Game::_process(float delta)
@@ -72,7 +77,18 @@ void Game::_process(float delta)
         // Run AI
         AI->Update(delta);
 
-        ActiveMatch = AI->GetAIMatch();
+        int aiID = -1;
+        std::tie(ActiveMatch, aiID) = AI->GetAIMatch();
+
+        // Update AI stats to GUI
+        ControlPanel->set("generation", AI->GetGenerationNumber());
+        ControlPanel->set("ai_id", aiID);
+    }
+
+    if(ActiveMatch) {
+        // Update GUI
+        ControlPanel->set("elapsed_match_time", ActiveMatch->GetElapsedTime());
+        ControlPanel->set("lives", ActiveMatch->GetLivesLeft());
     }
 
     DrawGame();
