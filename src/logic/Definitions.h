@@ -30,7 +30,7 @@ constexpr int LEVEL_CLEAR_SCORE = 500;
 constexpr float DISALLOWED_BALL_LAUNCH_HORIZONTAL_THRESHOLD = 20;
 
 //! How long the AI is allowed to play before ending the match automatically
-constexpr float MAX_AI_PLAY_TIME = 120;
+constexpr float MAX_AI_PLAY_TIME = 75;
 
 constexpr float ELAPSED_TIME_SCORE_PENALTY = 0.5f;
 
