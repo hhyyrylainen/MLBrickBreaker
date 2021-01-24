@@ -51,6 +51,8 @@ also replace the number after `-j` with your number of CPU threads):
 
 ```sh
 mkdir build
+# Use this if Godot tries to import .obj files from the build folder:
+touch build/.gdignore
 godot --gdnative-generate-json-api build/api.json
 cd third_party/godot-cpp
 scons platform=PLATFORM generate_bindings=yes -j20 use_custom_api_file=yes custom_api_file=../../build/api.json bits=64 target=release
