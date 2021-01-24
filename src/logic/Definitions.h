@@ -23,8 +23,16 @@ constexpr auto BALL_SIZE = BALL_SIZE_PIXELS;
 constexpr float PADDLE_SPEED = 2700.f;
 constexpr float BALL_SPEED = 1100.f;
 
+constexpr int STARTING_LIVES = 3;
+constexpr int SCORE_PER_BROKEN_BRICK = 20;
+constexpr int LEVEL_CLEAR_SCORE = 500;
+
+constexpr float DISALLOWED_BALL_LAUNCH_HORIZONTAL_THRESHOLD = 20;
+
 //! How long the AI is allowed to play before ending the match automatically
 constexpr float MAX_AI_PLAY_TIME = 120;
+
+constexpr float ELAPSED_TIME_SCORE_PENALTY = 0.5f;
 
 constexpr float PI = 3.14159265359f;
 

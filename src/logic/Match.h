@@ -48,6 +48,22 @@ public:
         MoveToState(MatchState::Ended);
     }
 
+    int GetScore() const
+    {
+        return Score;
+    }
+
+    int GetTimedScore() const
+    {
+        return std::max(
+            0, static_cast<int>(GetScore() - (TotalElapsed * ELAPSED_TIME_SCORE_PENALTY)));
+    }
+
+    int GetLivesLeft() const
+    {
+        return LivesLeft;
+    }
+
 
     // None of the objects in these should be modified, only used for drawing
     // And for AI to read their state, might be a bit cleaner if that had separate named
@@ -94,6 +110,9 @@ private:
 
     float TotalElapsed = 0;
     float CurrentStateElapsed = 0;
+
+    int Score = 0;
+    int LivesLeft = STARTING_LIVES;
 
     std::mt19937 RandomEngine;
     std::normal_distribution<float> BallHorizontalDistribution{0, 80};

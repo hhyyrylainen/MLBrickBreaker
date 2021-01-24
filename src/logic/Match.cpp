@@ -92,6 +92,14 @@ void Match::Update(float elapsed, const Input& input)
         break;
     }
     case MatchState::Playing: {
+        // Check for next level
+        if(Bricks.empty()) {
+
+            // Won the current level
+            MoveToState(MatchState::Starting);
+            Score += LEVEL_CLEAR_SCORE;
+        }
+
         break;
     }
     case MatchState::Ended: break;
@@ -170,7 +178,6 @@ void Match::HandleBallMovement(float elapsed)
                 ball.X < -BALL_OUT_OF_BOUNDS || ball.X > BALL_OUT_OF_BOUNDS)) {
             // Ball went through the bottom of the playing field (or out of bounds)
             iter = Balls.erase(iter);
-            // TODO: handle losing a life
             continue;
         }
 
@@ -242,7 +249,14 @@ void Match::HandleBallMovement(float elapsed)
 
     // Start serving next ball if all balls are gone
     if(Balls.empty() && State == MatchState::Playing) {
-        MoveToState(MatchState::WaitingForNextServe);
+        --LivesLeft;
+
+        if(LivesLeft >= 0) {
+            MoveToState(MatchState::WaitingForNextServe);
+        } else {
+            // Ran out of lives
+            MoveToState(MatchState::Ended);
+        }
     }
 }
 
@@ -257,11 +271,10 @@ void Match::HandleBrickBreaking()
             if(&*iter == brick) {
                 // TODO: break animation?
                 Bricks.erase(iter);
+                Score += SCORE_PER_BROKEN_BRICK;
                 break;
             }
         }
-
-        // TODO: add score
     }
 }
 
@@ -272,7 +285,7 @@ void Match::HandleStartup()
     Bricks.clear();
 
     // Paddles are not cleared so that the game remembers their position between levels
-    if(Paddles.size() > 1) {
+    if(!Paddles.empty()) {
         while(Paddles.size() > 1) {
             Paddles.pop_back();
         }
@@ -324,8 +337,14 @@ std::tuple<int, int> Match::CalculateBallStartPosition() const
 
 godot::Vector2 Match::CreateRandomInitialBallDirection()
 {
-    return godot::Vector2(BallHorizontalDistribution(RandomEngine), BALL_LAUNCH_UPWARDS)
-        .normalized();
+    float horizontal;
+
+    // Make sure that ball doesn't start too vertically
+    do {
+        horizontal = BallHorizontalDistribution(RandomEngine);
+    } while(std::abs(horizontal) < DISALLOWED_BALL_LAUNCH_HORIZONTAL_THRESHOLD);
+
+    return godot::Vector2(horizontal, BALL_LAUNCH_UPWARDS).normalized();
 }
 
 void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
@@ -359,7 +378,6 @@ void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
         normal = godot::Vector2(1, 0);
     } else if(top == lowest) {
         // Up
-        // TODO: this is not tested as bricks aren't added yet
         normal = godot::Vector2(0, -1);
     } else {
         // Down
