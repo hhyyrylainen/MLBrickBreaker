@@ -178,7 +178,6 @@ void Match::HandleBallMovement(float elapsed)
                 ball.X < -BALL_OUT_OF_BOUNDS || ball.X > BALL_OUT_OF_BOUNDS)) {
             // Ball went through the bottom of the playing field (or out of bounds)
             iter = Balls.erase(iter);
-            // TODO: handle losing a life
             continue;
         }
 
@@ -276,8 +275,6 @@ void Match::HandleBrickBreaking()
                 break;
             }
         }
-
-        // TODO: add score
     }
 }
 
@@ -340,8 +337,14 @@ std::tuple<int, int> Match::CalculateBallStartPosition() const
 
 godot::Vector2 Match::CreateRandomInitialBallDirection()
 {
-    return godot::Vector2(BallHorizontalDistribution(RandomEngine), BALL_LAUNCH_UPWARDS)
-        .normalized();
+    float horizontal;
+
+    // Make sure that ball doesn't start too vertically
+    do {
+        horizontal = BallHorizontalDistribution(RandomEngine);
+    } while(std::abs(horizontal) < DISALLOWED_BALL_LAUNCH_HORIZONTAL_THRESHOLD);
+
+    return godot::Vector2(horizontal, BALL_LAUNCH_UPWARDS).normalized();
 }
 
 void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
@@ -375,7 +378,6 @@ void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
         normal = godot::Vector2(1, 0);
     } else if(top == lowest) {
         // Up
-        // TODO: this is not tested as bricks aren't added yet
         normal = godot::Vector2(0, -1);
     } else {
         // Down
