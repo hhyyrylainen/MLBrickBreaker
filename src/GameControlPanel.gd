@@ -75,10 +75,10 @@ func _process(delta):
 
     if is_player:
         player_label.text = "Player: user"
-        generation_label.text = "Generation: %s" % generation
-        ai_id_label.text = "Watching AI: %s" % ai_id
     else:
         player_label.text = "Player: AI"
+        generation_label.text = "Generation: %s" % generation
+        ai_id_label.text = "Watching AI: %s" % ai_id
 
 func apply_visibility():
     # ai_start_button.visible = !is_player
