@@ -83,6 +83,7 @@ void Game::_process(float delta)
         // Update AI stats to GUI
         ControlPanel->set("generation", AI->GetGenerationNumber());
         ControlPanel->set("ai_id", aiID);
+        ControlPanel->set("alive_ais", AI->CountActiveAIMatches());
     }
 
     if(ActiveMatch) {

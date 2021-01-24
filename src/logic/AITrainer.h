@@ -31,7 +31,9 @@ public:
 
     //! \brief Returns a match for the user to view, second value is the AI identifier
     //! (basically just an index for now)
-    std::tuple<std::shared_ptr<Match>, int> GetAIMatch();
+    std::tuple<std::shared_ptr<Match>, int> GetAIMatch() const;
+
+    int CountActiveAIMatches() const;
 
     int GetGenerationNumber() const
     {

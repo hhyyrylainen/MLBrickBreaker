@@ -40,6 +40,7 @@ generation_label_path = NodePath("PanelContainer/VBoxContainer/AIStats/HBoxConta
 lives_label_path = NodePath("PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer2/Lives")
 ai_id_label_path = NodePath("PanelContainer/VBoxContainer/AIStats/HBoxContainer/HBoxContainer/Watching")
 score_label_path = NodePath("PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer2/Score")
+alive_ais_label_path = NodePath("PanelContainer/VBoxContainer/AIStats/Alive")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 margin_right = 28.0
@@ -53,7 +54,7 @@ __meta__ = {
 margin_left = 2.0
 margin_top = 3.0
 margin_right = 320.0
-margin_bottom = 180.0
+margin_bottom = 213.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="BasicInfoBox" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
@@ -133,7 +134,7 @@ margin_bottom = 99.0
 [node name="AIStats" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
 margin_top = 107.0
 margin_right = 318.0
-margin_bottom = 132.0
+margin_bottom = 165.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/AIStats"]
 margin_right = 318.0
@@ -156,10 +157,16 @@ margin_right = 163.0
 margin_bottom = 25.0
 text = "Watching AI: -1"
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
-margin_top = 140.0
+[node name="Alive" type="Label" parent="PanelContainer/VBoxContainer/AIStats"]
+margin_top = 33.0
 margin_right = 318.0
-margin_bottom = 177.0
+margin_bottom = 58.0
+text = "Alive AIs: -1"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+margin_top = 173.0
+margin_right = 318.0
+margin_bottom = 210.0
 size_flags_horizontal = 3
 alignment = 1
 

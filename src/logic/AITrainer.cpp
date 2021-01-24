@@ -137,7 +137,7 @@ void AITrainer::PerformAIThinking(
     output = ProgrammaticInput(left, right, special);
 }
 
-std::tuple<std::shared_ptr<Match>, int> AITrainer::GetAIMatch()
+std::tuple<std::shared_ptr<Match>, int> AITrainer::GetAIMatch() const
 {
     int index = 0;
 
@@ -154,6 +154,18 @@ std::tuple<std::shared_ptr<Match>, int> AITrainer::GetAIMatch()
 
     // No good match to show
     return std::make_tuple(nullptr, -1);
+}
+
+int AITrainer::CountActiveAIMatches() const
+{
+    int count = 0;
+
+    for(const auto& run : CurrentRuns){
+        if(!run.PlayingMatch->HasEnded())
+            ++count;
+    }
+
+    return count;
 }
 
 double AITrainer::GetScaledPaddleX(const Match& match) const

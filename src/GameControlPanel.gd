@@ -16,6 +16,7 @@ export var generation_label_path: NodePath
 export var lives_label_path: NodePath
 export var ai_id_label_path: NodePath
 export var score_label_path: NodePath
+export var alive_ais_label_path: NodePath
 
 # externally changed variables
 var is_player: bool = false
@@ -24,6 +25,7 @@ var generation: int = 0
 var lives: int = 0
 var ai_id: int = 0
 var score: float = 0
+var alive_ais: int = 0
 
 # "private" variables
 var fps_label: Label
@@ -37,6 +39,8 @@ var generation_label: Label
 var lives_label: Label
 var ai_id_label: Label
 var score_label: Label
+var alive_ais_label: Label
+
 
 var total_elapsed: float = 0
 
@@ -54,6 +58,7 @@ func _ready():
     lives_label = get_node(lives_label_path)
     ai_id_label = get_node(ai_id_label_path)
     score_label = get_node(score_label_path)
+    alive_ais_label = get_node(alive_ais_label_path)
 
 
 # Called from C++ when match startup code has ran
@@ -79,6 +84,7 @@ func _process(delta):
         player_label.text = "Player: AI"
         generation_label.text = "Generation: %s" % generation
         ai_id_label.text = "Watching AI: %s" % ai_id
+        alive_ais_label.text = "Alive AIs: %s" % alive_ais
 
 func apply_visibility():
     # ai_start_button.visible = !is_player
