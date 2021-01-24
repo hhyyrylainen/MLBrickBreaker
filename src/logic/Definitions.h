@@ -27,7 +27,7 @@ constexpr int STARTING_LIVES = 3;
 constexpr int SCORE_PER_BROKEN_BRICK = 20;
 constexpr int LEVEL_CLEAR_SCORE = 500;
 
-constexpr float DISALLOWED_BALL_LAUNCH_HORIZONTAL_THRESHOLD = 5;
+constexpr float DISALLOWED_BALL_LAUNCH_HORIZONTAL_THRESHOLD = 20;
 
 //! How long the AI is allowed to play before ending the match automatically
 constexpr float MAX_AI_PLAY_TIME = 120;
