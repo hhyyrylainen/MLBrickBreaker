@@ -14,6 +14,8 @@ export var total_time_label_path: NodePath
 export var game_time_label_path: NodePath
 export var generation_label_path: NodePath
 export var lives_label_path: NodePath
+export var ai_id_label_path: NodePath
+export var score_label_path: NodePath
 
 # externally changed variables
 var is_player: bool = false
@@ -21,6 +23,7 @@ var elapsed_match_time: float = 0
 var generation: int = 0
 var lives: int = 0
 var ai_id: int = 0
+var score: float = 0
 
 # "private" variables
 var fps_label: Label
@@ -32,6 +35,8 @@ var total_time_label: Label
 var game_time_label: Label
 var generation_label: Label
 var lives_label: Label
+var ai_id_label: Label
+var score_label: Label
 
 var total_elapsed: float = 0
 
@@ -47,6 +52,8 @@ func _ready():
     game_time_label = get_node(game_time_label_path)
     generation_label = get_node(generation_label_path)
     lives_label = get_node(lives_label_path)
+    ai_id_label = get_node(ai_id_label_path)
+    score_label = get_node(score_label_path)
 
 
 # Called from C++ when match startup code has ran
@@ -63,11 +70,13 @@ func _process(delta):
 
     total_time_label.text = "Total Time: %s" % int(total_elapsed)
     game_time_label.text = "Game Time: %s" % stepify(elapsed_match_time, 0.1)
+    score_label.text = "Score: %s" % stepify(score, 0.1)
     lives_label.text = "Lives: %s" % lives
 
     if is_player:
         player_label.text = "Player: user"
         generation_label.text = "Generation: %s" % generation
+        ai_id_label.text = "Watching AI: %s" % ai_id
     else:
         player_label.text = "Player: AI"
 

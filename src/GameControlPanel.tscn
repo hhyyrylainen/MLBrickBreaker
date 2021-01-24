@@ -36,8 +36,10 @@ ai_controls_container_path = NodePath("PanelContainer/VBoxContainer/AITrainingCo
 ai_stats_container_path = NodePath("PanelContainer/VBoxContainer/AIStats")
 total_time_label_path = NodePath("PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer/TotalTime")
 game_time_label_path = NodePath("PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer/HBoxContainer/GameTime")
-generation_label_path = NodePath("PanelContainer/VBoxContainer/AIStats/Generation")
-lives_label_path = NodePath("PanelContainer/VBoxContainer/CurrentGameStats/Lives")
+generation_label_path = NodePath("PanelContainer/VBoxContainer/AIStats/HBoxContainer/Generation")
+lives_label_path = NodePath("PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer2/Lives")
+ai_id_label_path = NodePath("PanelContainer/VBoxContainer/AIStats/HBoxContainer/HBoxContainer/Watching")
+score_label_path = NodePath("PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer2/Score")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 margin_right = 28.0
@@ -50,16 +52,16 @@ __meta__ = {
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
 margin_left = 2.0
 margin_top = 3.0
-margin_right = 301.0
+margin_right = 320.0
 margin_bottom = 180.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="BasicInfoBox" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
-margin_right = 299.0
+margin_right = 318.0
 margin_bottom = 25.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/BasicInfoBox"]
-margin_right = 299.0
+margin_right = 318.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 
@@ -70,25 +72,25 @@ text = "Player: ?"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/BasicInfoBox/HBoxContainer"]
 margin_left = 98.0
-margin_right = 299.0
+margin_right = 318.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 alignment = 2
 
 [node name="FPS" type="Label" parent="PanelContainer/VBoxContainer/BasicInfoBox/HBoxContainer/HBoxContainer"]
-margin_left = 140.0
-margin_right = 201.0
+margin_left = 159.0
+margin_right = 220.0
 margin_bottom = 25.0
 text = "FPS: ?"
 align = 2
 
 [node name="CurrentGameStats" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
 margin_top = 33.0
-margin_right = 299.0
+margin_right = 318.0
 margin_bottom = 91.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/CurrentGameStats"]
-margin_right = 299.0
+margin_right = 318.0
 margin_bottom = 25.0
 
 [node name="TotalTime" type="Label" parent="PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer"]
@@ -98,7 +100,7 @@ text = "Total Time: 0"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer"]
 margin_left = 147.0
-margin_right = 299.0
+margin_right = 318.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 
@@ -107,45 +109,71 @@ margin_right = 152.0
 margin_bottom = 25.0
 text = "Match Time: 0"
 
-[node name="Lives" type="Label" parent="PanelContainer/VBoxContainer/CurrentGameStats"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer/CurrentGameStats"]
 margin_top = 33.0
-margin_right = 299.0
+margin_right = 318.0
 margin_bottom = 58.0
+
+[node name="Lives" type="Label" parent="PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer2"]
+margin_right = 79.0
+margin_bottom = 25.0
 text = "Lives: 0"
+
+[node name="Score" type="Label" parent="PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer2"]
+margin_left = 87.0
+margin_right = 173.0
+margin_bottom = 25.0
+text = "Score: 0"
 
 [node name="AITrainingControls" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
 margin_top = 99.0
-margin_right = 299.0
+margin_right = 318.0
 margin_bottom = 99.0
 
 [node name="AIStats" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
 margin_top = 107.0
-margin_right = 299.0
+margin_right = 318.0
 margin_bottom = 132.0
 
-[node name="Generation" type="Label" parent="PanelContainer/VBoxContainer/AIStats"]
-margin_right = 299.0
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/AIStats"]
+margin_right = 318.0
+margin_bottom = 25.0
+
+[node name="Generation" type="Label" parent="PanelContainer/VBoxContainer/AIStats/HBoxContainer"]
+margin_right = 147.0
 margin_bottom = 25.0
 text = "Generation: 0"
 
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/AIStats/HBoxContainer"]
+margin_left = 155.0
+margin_right = 318.0
+margin_bottom = 25.0
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="Watching" type="Label" parent="PanelContainer/VBoxContainer/AIStats/HBoxContainer/HBoxContainer"]
+margin_right = 163.0
+margin_bottom = 25.0
+text = "Watching AI: -1"
+
 [node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
 margin_top = 140.0
-margin_right = 299.0
+margin_right = 318.0
 margin_bottom = 177.0
 size_flags_horizontal = 3
 alignment = 1
 
 [node name="StartAI" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer2"]
-margin_left = 25.0
-margin_right = 196.0
+margin_left = 34.0
+margin_right = 205.0
 margin_bottom = 37.0
 size_flags_horizontal = 4
 disabled = true
 text = "Start Training"
 
 [node name="QuitButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer2"]
-margin_left = 204.0
-margin_right = 274.0
+margin_left = 213.0
+margin_right = 283.0
 margin_bottom = 37.0
 size_flags_horizontal = 4
 text = "Quit"

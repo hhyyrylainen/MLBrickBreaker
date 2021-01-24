@@ -89,6 +89,7 @@ void Game::_process(float delta)
         // Update GUI
         ControlPanel->set("elapsed_match_time", ActiveMatch->GetElapsedTime());
         ControlPanel->set("lives", ActiveMatch->GetLivesLeft());
+        ControlPanel->set("score", ActiveMatch->GetTimedScore());
     }
 
     DrawGame();
