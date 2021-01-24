@@ -110,16 +110,19 @@ void AITrainer::PerformAIThinking(
     const auto [brickX, brickY] = GetScaledLowestBrickPos(match);
 
     // AI inputs, must match what is in startgenes
-    std::array<double, 5> inputs = {// paddle x
-        GetScaledPaddleX(match),
-        // ball x
-        ballX,
-        // ball y
-        ballY,
-        // lowest brick x
-        brickX,
-        // lowest brick y
-        brickY};
+    std::array<double, 5> inputs;
+
+    // paddle x
+    inputs[0] = GetScaledPaddleX(match);
+    // ball x
+    inputs[1] = ballX;
+    // ball y
+    inputs[2] = ballY;
+    // lowest brick x
+    inputs[3] = brickX;
+    // lowest brick y
+    inputs[4] = brickY;
+
 
     auto* network = organism->net;
 
@@ -160,7 +163,7 @@ int AITrainer::CountActiveAIMatches() const
 {
     int count = 0;
 
-    for(const auto& run : CurrentRuns){
+    for(const auto& run : CurrentRuns) {
         if(!run.PlayingMatch->HasEnded())
             ++count;
     }
