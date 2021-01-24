@@ -92,6 +92,14 @@ void Match::Update(float elapsed, const Input& input)
         break;
     }
     case MatchState::Playing: {
+        // Check for next level
+        if(Bricks.empty()) {
+
+            // Won the current level
+            MoveToState(MatchState::Starting);
+            Score += LEVEL_CLEAR_SCORE;
+        }
+
         break;
     }
     case MatchState::Ended: break;
