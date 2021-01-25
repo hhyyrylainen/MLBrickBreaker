@@ -27,7 +27,7 @@ public:
 
     void Begin();
 
-    void Update(float delta);
+    void Update(float delta, int iterations = 1);
 
     //! \brief Returns a match for the user to view, second value is the AI identifier
     //! (basically just an index for now)

@@ -45,7 +45,7 @@ void AITrainer::Begin()
     SetupGenerationMatches();
 }
 
-void AITrainer::Update(float delta)
+void AITrainer::Update(float delta, int iterations)
 {
     bool generationFinished = true;
 
@@ -60,22 +60,27 @@ void AITrainer::Update(float delta)
 
         generationFinished = false;
 
-        // We don't have winners yet...
-        run.AI->winner = false;
+        int iterationsLeft = iterations;
 
-        ProgrammaticInput input;
-        PerformAIThinking(run.AI, *run.PlayingMatch, input);
-        run.PlayingMatch->Update(delta, input);
+        do {
+            // We don't have winners yet...
+            run.AI->winner = false;
 
-        // Time out the AI after some time
-        if(run.PlayingMatch->GetElapsedTime() >= MAX_AI_PLAY_TIME)
-            run.PlayingMatch->Forfeit();
+            ProgrammaticInput input;
+            PerformAIThinking(run.AI, *run.PlayingMatch, input);
+            run.PlayingMatch->Update(delta, input);
 
-        // Record score when match ends
-        if(run.PlayingMatch->HasEnded()) {
-            // fitness is alive time + timed score
-            run.AI->fitness = run.PlayingMatch->GetTimedScore() + run.PlayingMatch->GetElapsedTime();
-        }
+            // Time out the AI after some time
+            if(run.PlayingMatch->GetElapsedTime() >= MAX_AI_PLAY_TIME)
+                run.PlayingMatch->Forfeit();
+
+            // Record score when match ends
+            if(run.PlayingMatch->HasEnded()) {
+                // fitness is alive time + timed score
+                run.AI->fitness =
+                    run.PlayingMatch->GetTimedScore() + run.PlayingMatch->GetElapsedTime();
+            }
+        } while(--iterationsLeft > 0);
     }
 
     // Start a new generation if needed
