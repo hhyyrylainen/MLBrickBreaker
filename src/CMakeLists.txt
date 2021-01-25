@@ -39,7 +39,8 @@ endif()
 # Link time optimization
 set_property(TARGET mlbb PROPERTY INTERPROCEDURAL_OPTIMIZATION ON)
 
-target_link_libraries(mlbb PRIVATE neat)
+find_package(Threads)
+target_link_libraries(mlbb PRIVATE neat ${CMAKE_THREAD_LIBS_INIT})
 
 set_target_properties(mlbb PROPERTIES
   CXX_STANDARD 17

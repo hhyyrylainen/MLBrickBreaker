@@ -8,7 +8,12 @@ class Genome;
 class Organism;
 } // namespace NEAT
 
+#include <atomic>
+#include <condition_variable>
 #include <memory>
+#include <mutex>
+#include <stack>
+#include <thread>
 #include <tuple>
 
 namespace mlbb {
@@ -21,13 +26,41 @@ class AITrainer {
         std::shared_ptr<Match> PlayingMatch;
     };
 
+    struct AIRunTask {
+    public:
+        explicit AIRunTask(bool quit) : Quit(true)
+        {
+            if(!quit)
+                throw std::runtime_error("quit constructor must provide true");
+        }
+
+        AIRunTask(RunningAI** tasks, int count, int iterations, float delta) :
+            Delta(delta), Iterations(iterations), Count(count), TaskArray(tasks)
+        {}
+
+        // TODO: actually use this (though this might need atomic, or a more complicated
+        // design...)
+        bool AnyStillActive = false;
+
+        // If true tells task thread to quit
+        bool Quit = false;
+
+        float Delta = 0.1f;
+
+        int Iterations = 1;
+
+        // Would be nice to use a view here, but those are AFAIK C++20
+        int Count = 0;
+        RunningAI** TaskArray = nullptr;
+    };
+
 public:
     AITrainer(int width, int height, int startingPopulationSize);
     ~AITrainer();
 
     void Begin();
 
-    void Update(float delta, int iterations = 1);
+    void Update(float delta, int iterations, int threads);
 
     //! \brief Returns a match for the user to view, second value is the AI identifier
     //! (basically just an index for now)
@@ -50,6 +83,12 @@ private:
     std::tuple<double, double> GetScaledBallPos(const Match& match) const;
     std::tuple<double, double> GetScaledLowestBrickPos(const Match& match) const;
 
+    void EnsureRightThreadCount(int threads, std::unique_lock<std::mutex>& lock);
+
+    void RunTaskThread();
+    void ProcessTask(AIRunTask& task);
+    void RunSingleAI(RunningAI& run, float delta, int iterations);
+
 private:
     const int MatchWidth;
     const int MatchHeight;
@@ -61,5 +100,19 @@ private:
     std::unique_ptr<NEAT::Genome> InitialGenes;
 
     int CurrentGeneration = -1;
+
+    // Threading variables
+    // TODO: find a better way to turn off threads (right now we don't know which thread
+    // closes, so we can't really clean them up easily)
+    std::vector<std::thread> TaskThreads;
+    int ActiveWorkerCount = 0;
+
+    std::mutex TaskListMutex;
+    std::stack<AIRunTask> TaskList;
+    std::condition_variable TaskWait;
+
+    std::atomic<int> ReadyTasks;
+
+    std::vector<RunningAI*> AliveRuns;
 };
 } // namespace mlbb

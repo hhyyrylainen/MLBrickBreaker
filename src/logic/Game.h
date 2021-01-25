@@ -34,6 +34,12 @@ public:
         SpeedMultiplier = std::max(speedMultiplier, 1);
     }
 
+    void SetTrainingThreads(int threads)
+    {
+        TrainingThreads = std::max(threads, 1);
+    }
+
+
     static void _register_methods();
 
 private:
@@ -60,6 +66,7 @@ private:
 
     float TimePassed = 0.f;
     int SpeedMultiplier = 1;
+    int TrainingThreads = 1;
 
     std::shared_ptr<Match> ActiveMatch;
     std::optional<AITrainer> AI;
