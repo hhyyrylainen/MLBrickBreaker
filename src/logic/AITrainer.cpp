@@ -17,6 +17,7 @@ AITrainer::~AITrainer()
     {
         std::unique_lock<std::mutex> lock(TaskListMutex);
         EnsureRightThreadCount(0, lock);
+        TaskWait.notify_all();
     }
 
     // Wait for all of the threads to quit
@@ -63,6 +64,10 @@ void AITrainer::Update(float delta, int iterations, int threads)
     // Update any current generation AIs
     const int simulationsNeeded = CountActiveAIMatches();
 
+    // TODO: add a parameter to limit the concurrently running AIs (so that first N are
+    // ran until completion and then the next ones, but not on the same game update as that
+    // wouldn't help anything)
+
     if(simulationsNeeded <= 1 || threads <= 1) {
         // Just a single AI needs to be ran, run in current thread (or single thread mode is
         // used)
@@ -72,11 +77,10 @@ void AITrainer::Update(float delta, int iterations, int threads)
 
             RunSingleAI(run, delta, iterations);
         }
-    } else {
-        // TODO: add a parameter to limit the concurrently running AIs (so that first N are
-        // ran until completion and then the next ones, or rather this loop breaks whenever N
-        // number of AIs have ran)
 
+        // Make sure threads do get notified about quit tasks
+        TaskWait.notify_one();
+    } else {
         // Find AIs that are still alive to build a list of tasks to run
         const int aisPerThread = std::max(1, simulationsNeeded / threads);
 
@@ -110,6 +114,7 @@ void AITrainer::Update(float delta, int iterations, int threads)
             }
         }
 
+        TaskWait.notify_all();
         lock.unlock();
 
         // Wait for AIs to end
@@ -294,7 +299,7 @@ void AITrainer::RunTaskThread()
         // Wait for is used to prevent this getting stuck if the threads hit things just right
         // which shouldn't happen, but I don't want to deal with the chance that it would
         // happen
-        TaskWait.wait_for(lock, std::chrono::milliseconds(15));
+        TaskWait.wait_for(lock, std::chrono::milliseconds(200));
     }
 }
 
