@@ -12,7 +12,7 @@ using namespace mlbb;
 using namespace godot;
 
 using Clock = std::chrono::high_resolution_clock;
-using Seconds = std::chrono::duration<float, std::ratio<1>>;
+using Seconds = std::chrono::duration<double, std::ratio<1>>;
 using MilliSeconds = std::chrono::duration<int64_t, std::milli>;
 
 void Game::_register_methods()
@@ -111,11 +111,12 @@ void Game::_process(float delta)
     const auto updateDuration = Clock::now() - start;
 
     ControlPanel->set("update_performance",
-        std::chrono::duration_cast<Seconds>(updateDuration).count() / 1000.f);
+        std::chrono::duration_cast<Seconds>(updateDuration).count() * 1000.f);
 
-    if(!PlayerControlled)
+    if(!PlayerControlled) {
         ControlPanel->set("ai_performance",
-            std::chrono::duration_cast<Seconds>(aiDuration).count() / 1000.f);
+            std::chrono::duration_cast<Seconds>(aiDuration).count() * 1000.f);
+    }
 }
 
 void Game::DrawGame()
