@@ -29,6 +29,11 @@ public:
 
     void _process(float delta);
 
+    void SetSpeed(int speedMultiplier)
+    {
+        SpeedMultiplier = std::max(speedMultiplier, 1);
+    }
+
     static void _register_methods();
 
 private:
@@ -54,6 +59,7 @@ private:
     bool PlayerControlled = false;
 
     float TimePassed = 0.f;
+    int SpeedMultiplier = 1;
 
     std::shared_ptr<Match> ActiveMatch;
     std::optional<AITrainer> AI;

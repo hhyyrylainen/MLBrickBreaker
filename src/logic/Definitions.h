@@ -34,6 +34,11 @@ constexpr float MAX_AI_PLAY_TIME = 75;
 
 constexpr float ELAPSED_TIME_SCORE_PENALTY = 0.5f;
 
+//! This is used to cap the update simulation time to 25 ms in case the game lags too much
+constexpr auto MAX_ELAPSED_TIME_PER_UPDATE = 0.025f;
+constexpr auto DELTA_FOR_60_FPS = 1/60.f;
+constexpr int USE_60_FPS_DELTA_WITH_SPED_UP_TRAINING_THRESHOLD = 1;
+
 constexpr float PI = 3.14159265359f;
 
 } // namespace mlbb

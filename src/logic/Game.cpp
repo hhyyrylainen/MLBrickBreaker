@@ -6,13 +6,21 @@
 #include <Viewport.hpp>
 #include <neat.h>
 
+#include <chrono>
+
 using namespace mlbb;
 using namespace godot;
+
+using Clock = std::chrono::high_resolution_clock;
+using Seconds = std::chrono::duration<double, std::ratio<1>>;
+using MilliSeconds = std::chrono::duration<int64_t, std::milli>;
 
 void Game::_register_methods()
 {
     register_method("_process", &Game::_process);
     register_method("_ready", &Game::_ready);
+
+    register_method("set_speed", &Game::SetSpeed);
 
     register_property<Game, decltype(BrickScene)>("BrickScene", &Game::BrickScene, nullptr);
     register_property<Game, decltype(BallScene)>("BallScene", &Game::BallScene, nullptr);
@@ -64,18 +72,38 @@ void Game::_ready()
     }
 
     ControlPanel->set("is_player", PlayerControlled);
+    ControlPanel->connect("training_speed_changed", this, "set_speed");
     ControlPanel->call("on_start");
 }
 
 void Game::_process(float delta)
 {
+    if(delta <= 0)
+        return;
+
+    if(delta > MAX_ELAPSED_TIME_PER_UPDATE)
+        delta = MAX_ELAPSED_TIME_PER_UPDATE;
+
+    const Clock::time_point start = Clock::now();
+    Clock::duration aiDuration{};
+
     if(PlayerControlled) {
         if(ActiveMatch) {
             ActiveMatch->Update(delta, UserInput());
         }
     } else {
+        const Clock::time_point aiStart = Clock::now();
+
+        float aiDelta = delta;
+
+        if(SpeedMultiplier > USE_60_FPS_DELTA_WITH_SPED_UP_TRAINING_THRESHOLD) {
+            aiDelta = DELTA_FOR_60_FPS;
+        }
+
         // Run AI
-        AI->Update(delta);
+        AI->Update(aiDelta, SpeedMultiplier);
+
+        aiDuration = Clock::now() - aiStart;
 
         int aiID = -1;
         std::tie(ActiveMatch, aiID) = AI->GetAIMatch();
@@ -94,6 +122,16 @@ void Game::_process(float delta)
     }
 
     DrawGame();
+
+    const auto updateDuration = Clock::now() - start;
+
+    ControlPanel->set("update_performance",
+        std::chrono::duration_cast<Seconds>(updateDuration).count() * 1000.f);
+
+    if(!PlayerControlled) {
+        ControlPanel->set("ai_performance",
+            std::chrono::duration_cast<Seconds>(aiDuration).count() * 1000.f);
+    }
 }
 
 void Game::DrawGame()
