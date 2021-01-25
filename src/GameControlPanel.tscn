@@ -45,6 +45,8 @@ alive_ais_label_path = NodePath("PanelContainer/VBoxContainer/AIStats/Alive")
 ai_performance_label_path = NodePath("PanelContainer/VBoxContainer/AIStats/AIPerformance")
 update_performance_label_path = NodePath("PanelContainer/VBoxContainer/BasicInfoBox/Performance")
 speed_control_path = NodePath("PanelContainer/VBoxContainer/AITrainingControls/HBoxContainer/Training Speed")
+thread_count_label_path = NodePath("PanelContainer/VBoxContainer/AITrainingControls/VBoxContainer/HBoxContainer/CurrentThreads")
+thread_slider_path = NodePath("PanelContainer/VBoxContainer/AITrainingControls/VBoxContainer/Threads")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 margin_right = 28.0
@@ -57,16 +59,16 @@ __meta__ = {
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
 margin_left = 2.0
 margin_top = 3.0
-margin_right = 349.0
-margin_bottom = 316.0
+margin_right = 320.0
+margin_bottom = 422.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="BasicInfoBox" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 58.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/BasicInfoBox"]
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 
@@ -77,31 +79,31 @@ text = "Player: ?"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/BasicInfoBox/HBoxContainer"]
 margin_left = 98.0
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 alignment = 2
 
 [node name="FPS" type="Label" parent="PanelContainer/VBoxContainer/BasicInfoBox/HBoxContainer/HBoxContainer"]
-margin_left = 188.0
-margin_right = 249.0
+margin_left = 159.0
+margin_right = 220.0
 margin_bottom = 25.0
 text = "FPS: ?"
 align = 2
 
 [node name="Performance" type="Label" parent="PanelContainer/VBoxContainer/BasicInfoBox"]
 margin_top = 33.0
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 58.0
 text = "Game Update time: 0ms"
 
 [node name="CurrentGameStats" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
 margin_top = 66.0
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 124.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/CurrentGameStats"]
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 25.0
 
 [node name="TotalTime" type="Label" parent="PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer"]
@@ -111,7 +113,7 @@ text = "Total Time: 0"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer"]
 margin_left = 147.0
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 
@@ -122,7 +124,7 @@ text = "Match Time: 0"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer/CurrentGameStats"]
 margin_top = 33.0
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 58.0
 
 [node name="Lives" type="Label" parent="PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer2"]
@@ -138,11 +140,12 @@ text = "Score: 0"
 
 [node name="AITrainingControls" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
 margin_top = 132.0
-margin_right = 347.0
-margin_bottom = 169.0
+margin_right = 318.0
+margin_bottom = 242.0
+size_flags_horizontal = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/AITrainingControls"]
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 37.0
 size_flags_horizontal = 3
 
@@ -154,20 +157,50 @@ text = "Simulation speed:"
 
 [node name="Training Speed" type="OptionButton" parent="PanelContainer/VBoxContainer/AITrainingControls/HBoxContainer"]
 margin_left = 201.0
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 37.0
 size_flags_horizontal = 3
 text = "x1"
 items = [ "x1", null, false, 1, null, "x2", null, false, 2, null, "x3", null, false, 3, null, "x4", null, false, 4, null, "x8", null, false, 8, null, "x16", null, false, 16, null, "x32", null, false, 32, null, "x64", null, false, 64, null, "x128", null, false, 128, null, "x256", null, false, 256, null, "x512", null, false, 512, null ]
 selected = 0
 
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/AITrainingControls"]
+margin_top = 45.0
+margin_right = 318.0
+margin_bottom = 110.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/AITrainingControls/VBoxContainer"]
+margin_right = 318.0
+margin_bottom = 25.0
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/AITrainingControls/VBoxContainer/HBoxContainer"]
+margin_right = 94.0
+margin_bottom = 25.0
+text = "Threads:"
+
+[node name="CurrentThreads" type="Label" parent="PanelContainer/VBoxContainer/AITrainingControls/VBoxContainer/HBoxContainer"]
+margin_left = 102.0
+margin_right = 115.0
+margin_bottom = 25.0
+text = "1"
+
+[node name="Threads" type="HSlider" parent="PanelContainer/VBoxContainer/AITrainingControls/VBoxContainer"]
+margin_top = 33.0
+margin_right = 318.0
+margin_bottom = 65.0
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 128.0
+value = 1.0
+rounded = true
+
 [node name="AIStats" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
-margin_top = 177.0
-margin_right = 347.0
-margin_bottom = 268.0
+margin_top = 250.0
+margin_right = 318.0
+margin_bottom = 341.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/AIStats"]
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 25.0
 
 [node name="Generation" type="Label" parent="PanelContainer/VBoxContainer/AIStats/HBoxContainer"]
@@ -177,50 +210,50 @@ text = "Generation: 0"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/AIStats/HBoxContainer"]
 margin_left = 155.0
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 alignment = 2
 
 [node name="Watching" type="Label" parent="PanelContainer/VBoxContainer/AIStats/HBoxContainer/HBoxContainer"]
-margin_left = 29.0
-margin_right = 192.0
+margin_right = 163.0
 margin_bottom = 25.0
 text = "Watching AI: -1"
 
 [node name="Alive" type="Label" parent="PanelContainer/VBoxContainer/AIStats"]
 margin_top = 33.0
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 58.0
 text = "Alive AIs: -1"
 
 [node name="AIPerformance" type="Label" parent="PanelContainer/VBoxContainer/AIStats"]
 margin_top = 66.0
-margin_right = 347.0
+margin_right = 318.0
 margin_bottom = 91.0
 text = "AI update: 0ms"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
-margin_top = 276.0
-margin_right = 347.0
-margin_bottom = 313.0
+margin_top = 349.0
+margin_right = 318.0
+margin_bottom = 386.0
 size_flags_horizontal = 3
 alignment = 1
 
 [node name="StartAI" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer2"]
-margin_left = 49.0
-margin_right = 220.0
+margin_left = 34.0
+margin_right = 205.0
 margin_bottom = 37.0
 size_flags_horizontal = 4
 disabled = true
 text = "Start Training"
 
 [node name="QuitButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer2"]
-margin_left = 228.0
-margin_right = 298.0
+margin_left = 213.0
+margin_right = 283.0
 margin_bottom = 37.0
 size_flags_horizontal = 4
 text = "Quit"
 [connection signal="item_selected" from="PanelContainer/VBoxContainer/AITrainingControls/HBoxContainer/Training Speed" to="." method="_on_Training_Speed_item_selected"]
+[connection signal="value_changed" from="PanelContainer/VBoxContainer/AITrainingControls/VBoxContainer/Threads" to="." method="_on_Threads_value_changed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer2/StartAI" to="." method="_on_QuitButton_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer2/QuitButton" to="." method="_on_QuitButton_pressed"]

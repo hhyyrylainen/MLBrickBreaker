@@ -20,8 +20,11 @@ export var alive_ais_label_path: NodePath
 export var ai_performance_label_path: NodePath
 export var update_performance_label_path: NodePath
 export var speed_control_path: NodePath
+export var thread_count_label_path: NodePath
+export var thread_slider_path: NodePath
 
 signal training_speed_changed
+signal threads_changed
 
 # externally changed variables
 var is_player: bool = false
@@ -51,6 +54,8 @@ var alive_ais_label: Label
 var ai_performance_label: Label
 var update_performance_label: Label
 var speed_control: OptionButton
+var thread_count_label: Label
+var thread_slider: Slider
 
 
 var total_elapsed: float = 0
@@ -73,11 +78,19 @@ func _ready():
     ai_performance_label = get_node(ai_performance_label_path)
     update_performance_label = get_node(update_performance_label_path)
     speed_control = get_node(speed_control_path)
+    thread_count_label = get_node(thread_count_label_path)
+    thread_slider = get_node(thread_slider_path)
 
 
 # Called from C++ when match startup code has ran
 func on_start():
     apply_visibility()
+
+    var processors = OS.get_processor_count()
+    thread_slider.max_value = processors
+
+    # Set default thread count
+    thread_slider.value = int(max(1, processors / 2))
 
 
 func _process(delta):
@@ -120,3 +133,12 @@ func _on_Training_Speed_item_selected(index):
     var new_speed: int = speed_control.get_item_id(index)
 
     emit_signal("training_speed_changed", new_speed)
+
+
+func _on_Threads_value_changed(value):
+    value = int(value)
+    emit_signal("threads_changed", value)
+    on_threads_updated(value)
+
+func on_threads_updated(value):
+    thread_count_label.text = "%s" % value

@@ -21,6 +21,7 @@ void Game::_register_methods()
     register_method("_ready", &Game::_ready);
 
     register_method("set_speed", &Game::SetSpeed);
+    register_method("set_threads", &Game::SetTrainingThreads);
 
     register_property<Game, decltype(BrickScene)>("BrickScene", &Game::BrickScene, nullptr);
     register_property<Game, decltype(BallScene)>("BallScene", &Game::BallScene, nullptr);
@@ -73,6 +74,7 @@ void Game::_ready()
 
     ControlPanel->set("is_player", PlayerControlled);
     ControlPanel->connect("training_speed_changed", this, "set_speed");
+    ControlPanel->connect("threads_changed", this, "set_threads");
     ControlPanel->call("on_start");
 }
 
@@ -101,7 +103,7 @@ void Game::_process(float delta)
         }
 
         // Run AI
-        AI->Update(aiDelta, SpeedMultiplier);
+        AI->Update(aiDelta, SpeedMultiplier, TrainingThreads);
 
         aiDuration = Clock::now() - aiStart;
 
