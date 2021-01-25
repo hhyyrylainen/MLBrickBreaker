@@ -6,8 +6,14 @@
 #include <Viewport.hpp>
 #include <neat.h>
 
+#include <chrono>
+
 using namespace mlbb;
 using namespace godot;
+
+using Clock = std::chrono::high_resolution_clock;
+using Seconds = std::chrono::duration<float, std::ratio<1>>;
+using MilliSeconds = std::chrono::duration<int64_t, std::milli>;
 
 void Game::_register_methods()
 {
@@ -69,13 +75,20 @@ void Game::_ready()
 
 void Game::_process(float delta)
 {
+    const Clock::time_point start = Clock::now();
+    Clock::duration aiDuration{};
+
     if(PlayerControlled) {
         if(ActiveMatch) {
             ActiveMatch->Update(delta, UserInput());
         }
     } else {
+        const Clock::time_point aiStart = Clock::now();
+
         // Run AI
         AI->Update(delta);
+
+        aiDuration = Clock::now() - aiStart;
 
         int aiID = -1;
         std::tie(ActiveMatch, aiID) = AI->GetAIMatch();
@@ -94,6 +107,15 @@ void Game::_process(float delta)
     }
 
     DrawGame();
+
+    const auto updateDuration = Clock::now() - start;
+
+    ControlPanel->set("update_performance",
+        std::chrono::duration_cast<Seconds>(updateDuration).count() / 1000.f);
+
+    if(!PlayerControlled)
+        ControlPanel->set("ai_performance",
+            std::chrono::duration_cast<Seconds>(aiDuration).count() / 1000.f);
 }
 
 void Game::DrawGame()

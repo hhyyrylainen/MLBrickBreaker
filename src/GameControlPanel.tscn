@@ -41,6 +41,8 @@ lives_label_path = NodePath("PanelContainer/VBoxContainer/CurrentGameStats/HBoxC
 ai_id_label_path = NodePath("PanelContainer/VBoxContainer/AIStats/HBoxContainer/HBoxContainer/Watching")
 score_label_path = NodePath("PanelContainer/VBoxContainer/CurrentGameStats/HBoxContainer2/Score")
 alive_ais_label_path = NodePath("PanelContainer/VBoxContainer/AIStats/Alive")
+ai_performance_label_path = NodePath("PanelContainer/VBoxContainer/AIStats/AIPerformance")
+update_performance_label_path = NodePath("PanelContainer/VBoxContainer/BasicInfoBox/Performance")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 margin_right = 28.0
@@ -54,12 +56,12 @@ __meta__ = {
 margin_left = 2.0
 margin_top = 3.0
 margin_right = 320.0
-margin_bottom = 213.0
+margin_bottom = 279.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="BasicInfoBox" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
 margin_right = 318.0
-margin_bottom = 25.0
+margin_bottom = 58.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/BasicInfoBox"]
 margin_right = 318.0
@@ -85,10 +87,16 @@ margin_bottom = 25.0
 text = "FPS: ?"
 align = 2
 
-[node name="CurrentGameStats" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
+[node name="Performance" type="Label" parent="PanelContainer/VBoxContainer/BasicInfoBox"]
 margin_top = 33.0
 margin_right = 318.0
-margin_bottom = 91.0
+margin_bottom = 58.0
+text = "Game Update time: 0ms"
+
+[node name="CurrentGameStats" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
+margin_top = 66.0
+margin_right = 318.0
+margin_bottom = 124.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/CurrentGameStats"]
 margin_right = 318.0
@@ -127,14 +135,14 @@ margin_bottom = 25.0
 text = "Score: 0"
 
 [node name="AITrainingControls" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
-margin_top = 99.0
+margin_top = 132.0
 margin_right = 318.0
-margin_bottom = 99.0
+margin_bottom = 132.0
 
 [node name="AIStats" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
-margin_top = 107.0
+margin_top = 140.0
 margin_right = 318.0
-margin_bottom = 165.0
+margin_bottom = 231.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/AIStats"]
 margin_right = 318.0
@@ -163,10 +171,16 @@ margin_right = 318.0
 margin_bottom = 58.0
 text = "Alive AIs: -1"
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
-margin_top = 173.0
+[node name="AIPerformance" type="Label" parent="PanelContainer/VBoxContainer/AIStats"]
+margin_top = 66.0
 margin_right = 318.0
-margin_bottom = 210.0
+margin_bottom = 91.0
+text = "AI update: 0ms"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+margin_top = 239.0
+margin_right = 318.0
+margin_bottom = 276.0
 size_flags_horizontal = 3
 alignment = 1
 
