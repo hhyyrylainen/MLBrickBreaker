@@ -1,4 +1,6 @@
 #include "Match.h"
+#include <iostream>
+#include <string>
 
 using namespace mlbb;
 
@@ -16,7 +18,11 @@ constexpr auto PADDLE_VELOCITY_TRANSFER_TO_BALL_FRACTION = 0.2f;
 
 constexpr auto SIDE_WALL_CALCULATION_THICKNESS = 10000;
 constexpr auto SIDE_WALL_OVERLAP = 100;
-
+float currentSpeed;
+float speedmultiplier;
+float accelerator;
+enum PreviousPaddleState {LEFT, RIGHT, STOPPED};
+PreviousPaddleState previous_dir;
 
 Match::Match(int width, int height) : Width(width), Height(height)
 {
@@ -107,33 +113,87 @@ void Match::MoveToState(MatchState newState)
 
 void Match::HandlePaddleMove(float elapsed, const Input& input)
 {
-    ResetPaddleVelocity();
+    
 
     switch(State) {
     case MatchState::Starting:
-    case MatchState::Ended: return;
+        ResetPaddleVelocity();
+        currentSpeed = 0.f;
+        speedmultiplier = 150.f;
+        accelerator = 100.f;
+        previous_dir = STOPPED;
+    case MatchState::Ended: 
+        ResetPaddleVelocity();
+        return;
     default: break;
     }
-
-    float movement = 0;
-
+        std::cout << std::to_string(previous_dir), std::to_string(speedmultiplier), std::to_string(currentSpeed);
+        std::cout << "\n";
     if(input.GetLeftPressed()) {
-        movement -= PADDLE_SPEED * elapsed;
+        if (previous_dir == PreviousPaddleState::RIGHT || previous_dir == PreviousPaddleState::STOPPED) {
+            currentSpeed = 0.f;
+            speedmultiplier = accelerator;
+        }
+        currentSpeed -=  speedmultiplier * elapsed;
+        if (currentSpeed > -PADDLE_SPEED) {
+            speedmultiplier += accelerator * elapsed; 
+        }
+        else {
+            currentSpeed = -PADDLE_SPEED;
+        }
+        previous_dir = LEFT;
+    }
+    else if(input.GetRightPressed()) {
+        if (previous_dir == PreviousPaddleState::LEFT || previous_dir == PreviousPaddleState::STOPPED) {
+            currentSpeed = 0.f;
+            speedmultiplier = accelerator;
+        }
+        currentSpeed +=  speedmultiplier * elapsed;
+        if ( currentSpeed < PADDLE_SPEED) {
+            speedmultiplier += accelerator * elapsed;
+        }
+        else {
+            currentSpeed = PADDLE_SPEED;
+        }
+        previous_dir = RIGHT;
+    }
+    else {
+        if (currentSpeed > 0 ) {
+            speedmultiplier -= accelerator * elapsed;
+            currentSpeed -= speedmultiplier * elapsed;
+            if (currentSpeed <= 0){
+                currentSpeed = 0.0;
+            }
+            
+        }
+        else if (currentSpeed < 0){
+            speedmultiplier -= accelerator * elapsed;
+            currentSpeed += speedmultiplier * elapsed;
+            if (currentSpeed >= 0){
+                currentSpeed = 0.0;
+            }  
+        }
+    }
+    if (speedmultiplier < 0 ) {
+        speedmultiplier = 0;
     }
 
-    if(input.GetRightPressed()) {
-        movement += PADDLE_SPEED * elapsed;
-    }
 
     for(auto& paddle : Paddles) {
         const auto previous = paddle.PositionAsVector();
+        // std::cout << std::to_string(currentSpeed);
+        // std::cout << "\n";
+        paddle.X += static_cast<int>(currentSpeed);
 
-        paddle.X += static_cast<int>(movement);
 
         if(paddle.X < 0) {
             paddle.X = 0;
+            previous_dir = STOPPED;
+            currentSpeed = 0.f;
         } else if(paddle.X + PADDLE_WIDTH > Width) {
             paddle.X = Width - PADDLE_WIDTH;
+            previous_dir = STOPPED;
+            currentSpeed = 0.f;
         }
 
         paddle.Velocity = (paddle.PositionAsVector() - previous) / elapsed;

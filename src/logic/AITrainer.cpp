@@ -4,6 +4,7 @@
 #include <population.h>
 
 #include <array>
+#include <functional>
 
 using namespace mlbb;
 
