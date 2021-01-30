@@ -18,11 +18,7 @@ constexpr auto PADDLE_VELOCITY_TRANSFER_TO_BALL_FRACTION = 0.2f;
 
 constexpr auto SIDE_WALL_CALCULATION_THICKNESS = 10000;
 constexpr auto SIDE_WALL_OVERLAP = 100;
-float currentSpeed;
-float speedmultiplier;
-float accelerator;
-enum PreviousPaddleState {LEFT, RIGHT, STOPPED};
-PreviousPaddleState previous_dir;
+
 
 Match::Match(int width, int height) : Width(width), Height(height)
 {
@@ -44,6 +40,10 @@ Match::Match(Match&& other) : Width(other.Width), Height(other.Height)
     RandomEngine = std::move(other.RandomEngine);
     BallHorizontalDistribution = std::move(other.BallHorizontalDistribution);
     HitBricks = std::move(other.HitBricks);
+    CurrentPaddleSpeed = std::move(other.CurrentPaddleSpeed);
+    PaddleSpeedMultiplier = std::move(other.PaddleSpeedMultiplier);
+    PaddleAccelerator = std::move(other.PaddleAccelerator);
+    paddleState = std::move(other.paddleState);
 }
 
 Match::Match(const Match& other) : Width(other.Width), Height(other.Height)
@@ -57,6 +57,10 @@ Match::Match(const Match& other) : Width(other.Width), Height(other.Height)
     RandomEngine = other.RandomEngine;
     BallHorizontalDistribution = other.BallHorizontalDistribution;
     HitBricks = other.HitBricks;
+    CurrentPaddleSpeed = other.CurrentPaddleSpeed;
+    PaddleSpeedMultiplier = other.PaddleSpeedMultiplier;
+    PaddleAccelerator = other.PaddleAccelerator;
+    paddleState = other.paddleState;
 }
 
 void Match::Update(float elapsed, const Input& input)
@@ -113,95 +117,102 @@ void Match::MoveToState(MatchState newState)
 
 void Match::HandlePaddleMove(float elapsed, const Input& input)
 {
-    
-
     switch(State) {
     case MatchState::Starting:
         ResetPaddleVelocity();
-        currentSpeed = 0.f;
-        speedmultiplier = 150.f;
-        accelerator = 100.f;
-        previous_dir = STOPPED;
+        CurrentPaddleSpeed = 0.f;
+        PaddleSpeedMultiplier = 150.f;
+        PaddleAccelerator = 100.f;
+        paddleState = STOPPED;
     case MatchState::Ended: 
         ResetPaddleVelocity();
         return;
     default: break;
     }
-        std::cout << std::to_string(previous_dir), std::to_string(speedmultiplier), std::to_string(currentSpeed);
-        std::cout << "\n";
     if(input.GetLeftPressed()) {
-        if (previous_dir == PreviousPaddleState::RIGHT || previous_dir == PreviousPaddleState::STOPPED) {
-            currentSpeed = 0.f;
-            speedmultiplier = accelerator;
+        if (paddleState == PreviousPaddleState::RIGHT || paddleState == PreviousPaddleState::STOPPED) {
+            ResetPaddleVelocity();
         }
-        currentSpeed -=  speedmultiplier * elapsed;
-        if (currentSpeed > -PADDLE_SPEED) {
-            speedmultiplier += accelerator * elapsed; 
+        AcceleratePaddle(false, elapsed);
+        if (CurrentPaddleSpeed > -PADDLE_SPEED) {
+            PaddleSpeedMultiplier += PaddleAccelerator * elapsed; 
         }
         else {
-            currentSpeed = -PADDLE_SPEED;
+            SetPaddleSpeed(-PADDLE_SPEED);
         }
-        previous_dir = LEFT;
+        paddleState = LEFT;
     }
     else if(input.GetRightPressed()) {
-        if (previous_dir == PreviousPaddleState::LEFT || previous_dir == PreviousPaddleState::STOPPED) {
-            currentSpeed = 0.f;
-            speedmultiplier = accelerator;
+        if (paddleState == PreviousPaddleState::LEFT || paddleState == PreviousPaddleState::STOPPED) {
+            ResetPaddleVelocity();
         }
-        currentSpeed +=  speedmultiplier * elapsed;
-        if ( currentSpeed < PADDLE_SPEED) {
-            speedmultiplier += accelerator * elapsed;
+        AcceleratePaddle(true, elapsed);
+        if ( CurrentPaddleSpeed < PADDLE_SPEED) {
+            PaddleSpeedMultiplier += PaddleAccelerator * elapsed;
         }
         else {
-            currentSpeed = PADDLE_SPEED;
+            SetPaddleSpeed(PADDLE_SPEED); ;
         }
-        previous_dir = RIGHT;
+        paddleState = RIGHT;
     }
     else {
-        if (currentSpeed > 0 ) {
-            speedmultiplier -= accelerator * elapsed;
-            currentSpeed -= speedmultiplier * elapsed;
-            if (currentSpeed <= 0){
-                currentSpeed = 0.0;
+        // decelerate the paddle
+        if (CurrentPaddleSpeed > 0) {
+            PaddleSpeedMultiplier -= PaddleAccelerator * elapsed;
+            AcceleratePaddle(false, elapsed);
+            if (CurrentPaddleSpeed <= 0){
+                SetPaddleSpeed(0.f);
             }
             
         }
-        else if (currentSpeed < 0){
-            speedmultiplier -= accelerator * elapsed;
-            currentSpeed += speedmultiplier * elapsed;
-            if (currentSpeed >= 0){
-                currentSpeed = 0.0;
+        else if (CurrentPaddleSpeed < 0) {
+            PaddleSpeedMultiplier -= PaddleAccelerator * elapsed;
+            AcceleratePaddle(true, elapsed);
+            if (CurrentPaddleSpeed >= 0) {
+                SetPaddleSpeed(0.f);
             }  
         }
     }
-    if (speedmultiplier < 0 ) {
-        speedmultiplier = 0;
+    if (PaddleSpeedMultiplier < 0 ) {
+        PaddleSpeedMultiplier = 0;
     }
-
 
     for(auto& paddle : Paddles) {
         const auto previous = paddle.PositionAsVector();
-        // std::cout << std::to_string(currentSpeed);
-        // std::cout << "\n";
-        paddle.X += static_cast<int>(currentSpeed);
-
-
+        paddle.X += static_cast<int>(CurrentPaddleSpeed);
         if(paddle.X < 0) {
             paddle.X = 0;
-            previous_dir = STOPPED;
-            currentSpeed = 0.f;
+            paddleState = STOPPED;
+            SetPaddleSpeed(0.f);
         } else if(paddle.X + PADDLE_WIDTH > Width) {
             paddle.X = Width - PADDLE_WIDTH;
-            previous_dir = STOPPED;
-            currentSpeed = 0.f;
+            paddleState = STOPPED;
+            SetPaddleSpeed(0.f);
         }
 
         paddle.Velocity = (paddle.PositionAsVector() - previous) / elapsed;
     }
 }
 
+void Match::AcceleratePaddle(bool accelerate, float elapsed)
+{
+    // either accelerate or decelerate the paddle
+    if (accelerate) {
+        CurrentPaddleSpeed +=  PaddleSpeedMultiplier * elapsed;
+    }
+    else{
+        CurrentPaddleSpeed -=  PaddleSpeedMultiplier * elapsed;
+    }
+}
+
+void Match::SetPaddleSpeed(float newSpeed){
+    CurrentPaddleSpeed = newSpeed;
+}
+
 void Match::ResetPaddleVelocity()
 {
+    PaddleSpeedMultiplier = PaddleAccelerator;
+    SetPaddleSpeed(0.f);
     for(auto& paddle : Paddles) {
         paddle.Velocity = godot::Vector2(0, 0);
     }
