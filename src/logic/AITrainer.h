@@ -2,12 +2,6 @@
 
 #include "Match.h"
 
-namespace NEAT {
-class Population;
-class Genome;
-class Organism;
-} // namespace NEAT
-
 #include <atomic>
 #include <condition_variable>
 #include <memory>
@@ -15,6 +9,12 @@ class Organism;
 #include <stack>
 #include <thread>
 #include <tuple>
+
+namespace NEAT {
+class Population;
+class Genome;
+class Organism;
+} // namespace NEAT
 
 namespace mlbb {
 
