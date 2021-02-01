@@ -41,4 +41,8 @@ constexpr int USE_60_FPS_DELTA_WITH_SPED_UP_TRAINING_THRESHOLD = 1;
 
 constexpr float PI = 3.14159265359f;
 
+constexpr float PADDLE_CENTER_FLAT_BOUNCE_AREA = 0.15f;
+constexpr float PADDLE_MAX_ANGLE_DEVIATION_RADIANS = PI / 6;
+
+
 } // namespace mlbb

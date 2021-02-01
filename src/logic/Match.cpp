@@ -1,5 +1,7 @@
 #include "Match.h"
 
+#include <algorithm>
+
 using namespace mlbb;
 
 constexpr auto NEXT_BALL_DELAY = 0.25f;
@@ -199,8 +201,8 @@ void Match::HandleBallMovement(float elapsed)
         // Paddle collision
         for(const auto& paddle : Paddles) {
             if(ball.OverlapsWith(paddle)) {
-                HandleBallCollision(
-                    ball, paddle, paddle.Velocity * PADDLE_VELOCITY_TRANSFER_TO_BALL_FRACTION);
+                HandleBallCollision(ball, paddle,
+                    paddle.Velocity * PADDLE_VELOCITY_TRANSFER_TO_BALL_FRACTION, true);
             }
         }
 
@@ -242,7 +244,7 @@ void Match::HandleBallMovement(float elapsed)
 
             auto nudge = godot::Vector2(BALL_VERTICAL_STUCK_NUDGE, 0);
 
-            if(ball.X > Width / 2){
+            if(ball.X > Width / 2) {
                 nudge = godot::Vector2(-BALL_VERTICAL_STUCK_NUDGE, 0);
             }
 
@@ -353,7 +355,7 @@ godot::Vector2 Match::CreateRandomInitialBallDirection()
 }
 
 void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
-    std::optional<godot::Vector2> extraVelocity)
+    std::optional<godot::Vector2> extraVelocity, bool useAngleAdjustment)
 {
     godot::Vector2 normal;
 
@@ -375,6 +377,8 @@ void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
 
     int lowest = std::max(left, std::max(right, std::max(top, bottom)));
 
+    std::optional<float> adjustmentAngle;
+
     if(left == lowest) {
         // Left
         normal = godot::Vector2(-1, 0);
@@ -384,12 +388,42 @@ void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
     } else if(top == lowest) {
         // Up
         normal = godot::Vector2(0, -1);
+
+        if(useAngleAdjustment) {
+            // Normal variability for the paddle based on how center the ball hit
+            const float hitPointPercentage =
+                std::clamp((ball.GetCenterPoint().x - collidedAgainst.X) /
+                               static_cast<float>(collidedAgainst.Width),
+                    0.f, 1.f);
+
+            // Don't change bounce angle if hit close enough to the center
+            if(hitPointPercentage < 0.5f - PADDLE_CENTER_FLAT_BOUNCE_AREA ||
+                hitPointPercentage > 0.5f + PADDLE_CENTER_FLAT_BOUNCE_AREA) {
+                // TODO: could use a non-linear function here
+                // Multiply is used to from maximum of 0.5 to 1 so that then max angle can be
+                // reached
+                if(hitPointPercentage <= 0.5f) {
+                    adjustmentAngle =
+                        (0.5f - hitPointPercentage) * 2 * -PADDLE_MAX_ANGLE_DEVIATION_RADIANS;
+                } else {
+                    adjustmentAngle =
+                        (hitPointPercentage - 0.5f) * 2 * PADDLE_MAX_ANGLE_DEVIATION_RADIANS;
+                }
+            }
+        }
+
     } else {
         // Down
         normal = godot::Vector2(0, 1);
     }
 
-    // TODO: normal variability for the paddle based on how center the ball hit
+    if(adjustmentAngle) {
+        normal = normal.rotated(*adjustmentAngle);
+    }
+
+    //    if(useAngleAdjustment) {
+    //        godot::Godot::print("normal: " + godot::String(normal));
+    //    }
 
     ball.Direction = -ball.Direction.reflect(normal);
 
