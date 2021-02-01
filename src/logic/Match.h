@@ -98,8 +98,11 @@ private:
     std::tuple<int, int> CalculateBallStartPosition() const;
     godot::Vector2 CreateRandomInitialBallDirection();
 
+    //! \brief Handle ball collision against a game object
+    //! \param useAngleAdjustment If true the bounce angle is changed based on how near the top
+    //! edge the ball hit.
     static void HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
-        std::optional<godot::Vector2> extraVelocity = {});
+        std::optional<godot::Vector2> extraVelocity = {}, bool useAngleAdjustment = false);
 
 private:
     const int Width;
