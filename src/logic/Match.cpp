@@ -400,8 +400,8 @@ void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
             if(hitPointPercentage < 0.5f - PADDLE_CENTER_FLAT_BOUNCE_AREA ||
                 hitPointPercentage > 0.5f + PADDLE_CENTER_FLAT_BOUNCE_AREA) {
                 // TODO: could use a non-linear function here
-                // Multiply is used to from maximum of 0.5 to 1 so that then max angle can be
-                // reached
+                // Multiply by two is used to from maximum of 0.5 to 1 so that then max angle
+                // can be reached
                 if(hitPointPercentage <= 0.5f) {
                     adjustmentAngle =
                         (0.5f - hitPointPercentage) * 2 * -PADDLE_MAX_ANGLE_DEVIATION_RADIANS;
@@ -421,11 +421,20 @@ void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
         normal = normal.rotated(*adjustmentAngle);
     }
 
-    //    if(useAngleAdjustment) {
-    //        godot::Godot::print("normal: " + godot::String(normal));
-    //    }
-
     ball.Direction = -ball.Direction.reflect(normal);
+
+    if(adjustmentAngle) {
+        const auto up = godot::Vector2(0, -1);
+
+        const auto angle = ball.Direction.angle_to(up);
+
+        // Prevent the ball from deflecting so much that it goes through and bounces to the
+        // wrong side
+        if(std::abs(angle) > PADDLE_ANGLE_DEVIATION_RESULTING_MAX_ANGLE) {
+
+            ball.Direction = ball.Direction.bounce(up);
+        }
+    }
 
     if(USE_BALL_PUSH) {
         // Push the ball back by at least 1 pixel to make sure it isn't colliding again
