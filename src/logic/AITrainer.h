@@ -37,8 +37,11 @@ class AITrainer {
                 throw std::runtime_error("quit constructor must provide true");
         }
 
-        AIRunTask(RunningAI** tasks, int count, int iterations, float delta) :
-            Delta(delta), Iterations(iterations), Count(count), TaskArray(tasks)
+        AIRunTask(RunningAI** tasks, int count, int iterations, float delta, int paddleSpeed,
+            int ballSpeed) :
+            Delta(delta),
+            Iterations(iterations), PaddleSpeed(paddleSpeed), BallSpeed(ballSpeed),
+            Count(count), TaskArray(tasks)
         {}
 
         // TODO: actually use this (though this might need atomic, or a more complicated
@@ -51,6 +54,8 @@ class AITrainer {
         float Delta = 0.1f;
 
         int Iterations = 1;
+        int PaddleSpeed = 1;
+        int BallSpeed = 1;
 
         // Would be nice to use a view here, but those are AFAIK C++20
         int Count = 0;
@@ -63,7 +68,8 @@ public:
 
     void Begin();
 
-    void Update(float delta, int iterations, int threads);
+    // TODO: this is starting to be a bit dirty now with added paddle and ball speeds...
+    void Update(float delta, int iterations, int threads, int paddleSpeed, int ballSpeed);
 
     //! \brief Returns a match for the user to view, second value is the AI identifier
     //! (basically just an index for now)
@@ -100,7 +106,8 @@ private:
 
     void RunTaskThread();
     void ProcessTask(AIRunTask& task);
-    void RunSingleAI(RunningAI& run, float delta, int iterations);
+    void RunSingleAI(
+        RunningAI& run, float delta, int iterations, int paddleSpeed, int ballSpeed);
 
 private:
     const int MatchWidth;

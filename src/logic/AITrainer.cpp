@@ -57,7 +57,8 @@ void AITrainer::Begin()
     SetupGenerationMatches();
 }
 
-void AITrainer::Update(float delta, int iterations, int threads)
+void AITrainer::Update(
+    float delta, int iterations, int threads, int paddleSpeed, int ballSpeed)
 {
     std::unique_lock<std::mutex> lock(TaskListMutex);
     EnsureRightThreadCount(threads > 1 ? threads : 0, lock);
@@ -77,7 +78,7 @@ void AITrainer::Update(float delta, int iterations, int threads)
             if(run.PlayingMatch->HasEnded())
                 continue;
 
-            RunSingleAI(run, delta, iterations);
+            RunSingleAI(run, delta, iterations, paddleSpeed, ballSpeed);
         }
 
         // Make sure threads do get notified about quit tasks
@@ -108,7 +109,8 @@ void AITrainer::Update(float delta, int iterations, int threads)
             ++currentChunk;
 
             if(currentChunk >= aisPerThread) {
-                TaskList.emplace(chunkStart, currentChunk, iterations, delta);
+                TaskList.emplace(
+                    chunkStart, currentChunk, iterations, delta, paddleSpeed, ballSpeed);
 
                 ++submittedTasks;
                 chunkStart = nullptr;
@@ -377,11 +379,13 @@ void AITrainer::RunTaskThread()
 void AITrainer::ProcessTask(AITrainer::AIRunTask& task)
 {
     for(int i = 0; i < task.Count; ++i) {
-        RunSingleAI(*task.TaskArray[i], task.Delta, task.Iterations);
+        RunSingleAI(
+            *task.TaskArray[i], task.Delta, task.Iterations, task.PaddleSpeed, task.BallSpeed);
     }
 }
 
-void AITrainer::RunSingleAI(AITrainer::RunningAI& run, float delta, int iterations)
+void AITrainer::RunSingleAI(
+    AITrainer::RunningAI& run, float delta, int iterations, int paddleSpeed, int ballSpeed)
 {
     do {
         // We don't have winners yet...
@@ -389,6 +393,7 @@ void AITrainer::RunSingleAI(AITrainer::RunningAI& run, float delta, int iteratio
 
         ProgrammaticInput input;
         PerformAIThinking(run.AI, *run.PlayingMatch, input);
+        run.PlayingMatch->SetGameVariables(paddleSpeed, ballSpeed);
         run.PlayingMatch->Update(delta, input);
 
         // Time out the AI after some time

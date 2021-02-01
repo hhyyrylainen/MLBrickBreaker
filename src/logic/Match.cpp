@@ -122,11 +122,11 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
     float movement = 0;
 
     if(input.GetLeftPressed()) {
-        movement -= PADDLE_SPEED * elapsed;
+        movement -= PaddleSpeed * elapsed;
     }
 
     if(input.GetRightPressed()) {
-        movement += PADDLE_SPEED * elapsed;
+        movement += PaddleSpeed * elapsed;
     }
 
     for(auto& paddle : Paddles) {
@@ -161,7 +161,7 @@ void Match::HandleBallMovement(float elapsed)
     for(auto iter = Balls.begin(); iter != Balls.end();) {
         auto& ball = *iter;
 
-        auto newPos = ball.PositionAsVector() + ball.Direction * BALL_SPEED * elapsed;
+        auto newPos = ball.PositionAsVector() + ball.Direction * BallSpeed * elapsed;
 
         ball.X = newPos.x;
         ball.Y = newPos.y;
@@ -458,6 +458,6 @@ void Match::HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
     // Extra velocity when hitting a moving paddle to make the player have more impact on the
     // ball direction
     if(extraVelocity) {
-        ball.Direction = ((ball.Direction * BALL_SPEED) + *extraVelocity).normalized();
+        ball.Direction = ((ball.Direction * BallSpeed) + *extraVelocity).normalized();
     }
 }
