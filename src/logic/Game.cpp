@@ -25,6 +25,7 @@ void Game::_register_methods()
     register_method("save_top_ai", &Game::SaveTopAI);
     register_method("set_paddle_speed", &Game::SetPaddleSpeed);
     register_method("set_ball_speed", &Game::SetBallSpeed);
+    register_method("set_ghost_count", &Game::SetGhostCount);
 
     register_property<Game, decltype(BrickScene)>("BrickScene", &Game::BrickScene, nullptr);
     register_property<Game, decltype(BallScene)>("BallScene", &Game::BallScene, nullptr);
@@ -92,6 +93,7 @@ void Game::_ready()
     ControlPanel->connect("save_ai_pressed", this, "save_top_ai");
     ControlPanel->connect("paddle_speed_changed", this, "set_paddle_speed");
     ControlPanel->connect("ball_speed_changed", this, "set_ball_speed");
+    ControlPanel->connect("ghost_count_changed", this, "set_ghost_count");
 
     ControlPanel->call("on_start");
 }
@@ -129,7 +131,7 @@ void Game::_process(float delta)
         aiDuration = Clock::now() - aiStart;
 
         int aiID = -1;
-        std::tie(ActiveMatch, aiID) = AI->GetAIMatch(&AdditionalAIMatchesToShow);
+        std::tie(ActiveMatch, aiID) = AI->GetAIMatch(&AdditionalAIMatchesToShow, Ghosts);
 
         // Update AI stats to GUI
         ControlPanel->set("generation", AI->GetGenerationNumber());

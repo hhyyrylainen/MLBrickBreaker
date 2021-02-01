@@ -49,6 +49,10 @@ public:
         BallSpeed = speed;
     }
 
+    void SetGhostCount(int count){
+        Ghosts = count;
+    }
+
     void SaveTopAI();
 
     static void _register_methods();
@@ -88,6 +92,7 @@ private:
     float TimePassed = 0.f;
     int SpeedMultiplier = 1;
     int TrainingThreads = 1;
+    int Ghosts = 10;
 
     // Default values come from the GUI, so these are intentionally very small to catch
     // problems

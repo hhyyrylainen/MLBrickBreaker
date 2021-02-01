@@ -28,6 +28,7 @@ export var ball_speed_label_path: NodePath
 export var ball_speed_slider_path: NodePath
 export var paddle_speed_label_path: NodePath
 export var paddle_speed_slider_path: NodePath
+export var ghost_control_path: NodePath
 
 export var status_hide_time: float = 3
 
@@ -36,6 +37,7 @@ signal threads_changed
 signal save_ai_pressed
 signal paddle_speed_changed
 signal ball_speed_changed
+signal ghost_count_changed
 
 # externally changed variables
 var is_player: bool = false
@@ -73,6 +75,8 @@ var ball_speed_label: Label
 var ball_speed_slider: Slider
 var paddle_speed_label: Label
 var paddle_speed_slider: Slider
+var ghost_control: OptionButton
+
 
 var status_visible_timer: float = 0
 
@@ -104,6 +108,7 @@ func _ready():
     ball_speed_slider = get_node(ball_speed_slider_path)
     paddle_speed_label = get_node(paddle_speed_label_path)
     paddle_speed_slider = get_node(paddle_speed_slider_path)
+    ghost_control = get_node(ghost_control_path)
 
 
 # Called from C++ when match startup code has ran
@@ -200,3 +205,9 @@ func _on_BallSpeed_value_changed(value):
 func _on_PaddleSpeed_value_changed(value):
     emit_signal("paddle_speed_changed", int(value))
     paddle_speed_label.text = "%s" % int(value)
+
+
+func _on_OptionButton_item_selected(index):
+    var new_value: int = ghost_control.get_item_id(index) - 1
+
+    emit_signal("ghost_count_changed", new_value)
