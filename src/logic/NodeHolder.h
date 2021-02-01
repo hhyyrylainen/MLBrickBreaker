@@ -28,8 +28,8 @@ public:
         Container(container), CreateNew(createNew)
     {}
 
-    NodeHolder(NodeHolder&& other) = default;
-    NodeHolder& operator=(NodeHolder&& other) = default;
+    NodeHolder(NodeHolder&& other) noexcept = default;
+    NodeHolder& operator=(NodeHolder&& other) noexcept = default;
 
     NodeHolder(const NodeHolder& other) = delete;
     NodeHolder& operator=(const NodeHolder& other) = delete;
@@ -45,13 +45,14 @@ public:
 
     void FreeUnmarked()
     {
-        for(auto iter = CreatedNodes.begin(); iter != CreatedNodes.end();) {
-            if(iter->Marked) {
-                ++iter;
-            } else {
+        // It's assumed here that CreatedNodes.size() < max int
+        for(int i = CreatedNodes.size() - 1; i >= 0; --i) {
 
-                iter->Node->free();
-                CreatedNodes.erase(iter);
+            auto& element = CreatedNodes[i];
+
+            if(!element.Marked) {
+                element.Node->free();
+                CreatedNodes.erase(CreatedNodes.begin() + i);
             }
         }
     }
