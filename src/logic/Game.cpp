@@ -156,11 +156,23 @@ void Game::SaveTopAI()
     if(!AI)
         return;
 
+    AI->SetGenerationEndCallback([this]() { OnPerformSave(); });
+
+    ControlPanel->call("show_status", godot::String("Saving on generation end"));
+}
+
+void Game::OnPerformSave()
+{
     const std::string targetFile = "best_species.txt";
+    const std::string individualTarget = "best_organism.txt";
 
     AI->WriteSpeciesToFile(targetFile, AIType::Best);
+    AI->WriteOrganismToFile(individualTarget, AIType::Best);
 
-    ControlPanel->call("show_status", godot::String("Wrote: ") + targetFile.c_str());
+    ControlPanel->call("show_status", godot::String("Wrote AI to files"));
+
+    godot::Godot::print(
+        godot::String("Wrote: ") + targetFile.c_str() + " and: " + individualTarget.c_str());
 }
 
 void Game::DrawGame()

@@ -248,6 +248,7 @@ text = "AI update: 0ms"
 margin_top = 394.0
 margin_right = 318.0
 margin_bottom = 419.0
+max_lines_visible = 9
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
 margin_top = 427.0

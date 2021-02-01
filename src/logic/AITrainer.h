@@ -4,6 +4,7 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <stack>
@@ -18,9 +19,7 @@ class Organism;
 
 namespace mlbb {
 
-enum class AIType {
-    Best
-};
+enum class AIType { Best };
 
 //! \brief Holds the AI simulation state and matches the AI is playing
 class AITrainer {
@@ -72,12 +71,19 @@ public:
         std::vector<std::shared_ptr<Match>>* ghostMatches = nullptr, int ghosts = 10) const;
 
     void WriteSpeciesToFile(const std::string& fileName, AIType ai) const;
+    void WriteOrganismToFile(const std::string& fileName, AIType ai) const;
 
     int CountActiveAIMatches() const;
 
     int GetGenerationNumber() const
     {
         return CurrentGeneration;
+    }
+
+    //! \brief Sets a oneshot generation end callback
+    void SetGenerationEndCallback(std::function<void()> callback)
+    {
+        GenerationEndCallback = callback;
     }
 
 private:
@@ -107,6 +113,8 @@ private:
     std::unique_ptr<NEAT::Genome> InitialGenes;
 
     int CurrentGeneration = -1;
+
+    std::function<void()> GenerationEndCallback;
 
     // Threading variables
     // TODO: find a better way to turn off threads (right now we don't know which thread

@@ -137,6 +137,12 @@ void AITrainer::Update(float delta, int iterations, int threads)
             species->compute_max_fitness();
         }
 
+        // Let other code do stuff if needed
+        if(GenerationEndCallback) {
+            GenerationEndCallback();
+            GenerationEndCallback = nullptr;
+        }
+
         // This creates the next generation
         AIPopulation->epoch(CurrentGeneration);
 
@@ -262,6 +268,28 @@ void AITrainer::WriteSpeciesToFile(const std::string& fileName, AIType ai) const
         std::ofstream writer(fileName);
 
         bestFound->print_to_file(writer);
+    }
+}
+
+void AITrainer::WriteOrganismToFile(const std::string& fileName, AIType ai) const
+{
+    // TODO: handle different ai types
+
+    if(!AIPopulation)
+        throw std::runtime_error("no AI population to save from");
+
+    NEAT::Organism* bestFound = nullptr;
+
+    for(auto* current : AIPopulation->organisms) {
+        if(!bestFound || bestFound->fitness < current->fitness) {
+            bestFound = current;
+        }
+    }
+
+    if(bestFound) {
+        std::ofstream writer(fileName);
+
+        bestFound->write_to_file(writer);
     }
 }
 

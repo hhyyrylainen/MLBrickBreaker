@@ -53,6 +53,8 @@ private:
 
     void LoadNEAT();
 
+    void OnPerformSave();
+
 private:
     godot::Ref<godot::PackedScene> BrickScene = nullptr;
     godot::Ref<godot::PackedScene> BallScene = nullptr;
