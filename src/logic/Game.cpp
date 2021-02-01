@@ -23,6 +23,8 @@ void Game::_register_methods()
     register_method("set_speed", &Game::SetSpeed);
     register_method("set_threads", &Game::SetTrainingThreads);
     register_method("save_top_ai", &Game::SaveTopAI);
+    register_method("set_paddle_speed", &Game::SetPaddleSpeed);
+    register_method("set_ball_speed", &Game::SetBallSpeed);
 
     register_property<Game, decltype(BrickScene)>("BrickScene", &Game::BrickScene, nullptr);
     register_property<Game, decltype(BallScene)>("BallScene", &Game::BallScene, nullptr);
@@ -88,6 +90,9 @@ void Game::_ready()
     ControlPanel->connect("training_speed_changed", this, "set_speed");
     ControlPanel->connect("threads_changed", this, "set_threads");
     ControlPanel->connect("save_ai_pressed", this, "save_top_ai");
+    ControlPanel->connect("paddle_speed_changed", this, "set_paddle_speed");
+    ControlPanel->connect("ball_speed_changed", this, "set_ball_speed");
+
     ControlPanel->call("on_start");
 }
 
@@ -106,6 +111,7 @@ void Game::_process(float delta)
 
     if(PlayerControlled) {
         if(ActiveMatch) {
+            ActiveMatch->SetGameVariables(PaddleSpeed, BallSpeed);
             ActiveMatch->Update(delta, UserInput());
         }
     } else {
@@ -118,7 +124,7 @@ void Game::_process(float delta)
         }
 
         // Run AI
-        AI->Update(aiDelta, SpeedMultiplier, TrainingThreads);
+        AI->Update(aiDelta, SpeedMultiplier, TrainingThreads, PaddleSpeed, BallSpeed);
 
         aiDuration = Clock::now() - aiStart;
 

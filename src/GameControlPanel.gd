@@ -24,12 +24,18 @@ export var thread_count_label_path: NodePath
 export var thread_slider_path: NodePath
 export var status_label_path: NodePath
 export var save_ai_button_path: NodePath
+export var ball_speed_label_path: NodePath
+export var ball_speed_slider_path: NodePath
+export var paddle_speed_label_path: NodePath
+export var paddle_speed_slider_path: NodePath
 
 export var status_hide_time: float = 3
 
 signal training_speed_changed
 signal threads_changed
 signal save_ai_pressed
+signal paddle_speed_changed
+signal ball_speed_changed
 
 # externally changed variables
 var is_player: bool = false
@@ -63,6 +69,10 @@ var thread_count_label: Label
 var thread_slider: Slider
 var status_label: Label
 var save_ai_button: Button
+var ball_speed_label: Label
+var ball_speed_slider: Slider
+var paddle_speed_label: Label
+var paddle_speed_slider: Slider
 
 var status_visible_timer: float = 0
 
@@ -90,6 +100,10 @@ func _ready():
     thread_slider = get_node(thread_slider_path)
     status_label = get_node(status_label_path)
     save_ai_button = get_node(save_ai_button_path)
+    ball_speed_label = get_node(ball_speed_label_path)
+    ball_speed_slider = get_node(ball_speed_slider_path)
+    paddle_speed_label = get_node(paddle_speed_label_path)
+    paddle_speed_slider = get_node(paddle_speed_slider_path)
 
 
 # Called from C++ when match startup code has ran
@@ -101,6 +115,12 @@ func on_start():
 
     # Set default thread count
     thread_slider.value = int(max(1, processors / 2))
+
+    emit_signal("paddle_speed_changed", int(paddle_speed_slider.value))
+    emit_signal("ball_speed_changed", int(ball_speed_slider.value))
+
+    paddle_speed_label.text = "%s" % int(paddle_speed_slider.value)
+    ball_speed_label.text = "%s" % int(ball_speed_slider.value)
 
 
 func _process(delta):
@@ -170,3 +190,13 @@ func on_threads_updated(value):
 
 func _on_SaveAI_pressed():
     emit_signal("save_ai_pressed")
+
+
+func _on_BallSpeed_value_changed(value):
+    emit_signal("ball_speed_changed", int(value))
+    ball_speed_label.text = "%s" % int(value)
+
+
+func _on_PaddleSpeed_value_changed(value):
+    emit_signal("paddle_speed_changed", int(value))
+    paddle_speed_label.text = "%s" % int(value)

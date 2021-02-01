@@ -39,6 +39,16 @@ public:
         TrainingThreads = std::max(threads, 1);
     }
 
+    void SetPaddleSpeed(int speed)
+    {
+        PaddleSpeed = speed;
+    }
+
+    void SetBallSpeed(int speed)
+    {
+        BallSpeed = speed;
+    }
+
     void SaveTopAI();
 
     static void _register_methods();
@@ -78,6 +88,11 @@ private:
     float TimePassed = 0.f;
     int SpeedMultiplier = 1;
     int TrainingThreads = 1;
+
+    // Default values come from the GUI, so these are intentionally very small to catch
+    // problems
+    int PaddleSpeed = 1;
+    int BallSpeed = 1;
 
     std::shared_ptr<Match> ActiveMatch;
     std::optional<AITrainer> AI;
