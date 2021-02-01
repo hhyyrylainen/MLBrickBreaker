@@ -22,6 +22,7 @@ void Game::_register_methods()
 
     register_method("set_speed", &Game::SetSpeed);
     register_method("set_threads", &Game::SetTrainingThreads);
+    register_method("save_top_ai", &Game::SaveTopAI);
 
     register_property<Game, decltype(BrickScene)>("BrickScene", &Game::BrickScene, nullptr);
     register_property<Game, decltype(BallScene)>("BallScene", &Game::BallScene, nullptr);
@@ -86,6 +87,7 @@ void Game::_ready()
     ControlPanel->set("is_player", PlayerControlled);
     ControlPanel->connect("training_speed_changed", this, "set_speed");
     ControlPanel->connect("threads_changed", this, "set_threads");
+    ControlPanel->connect("save_ai_pressed", this, "save_top_ai");
     ControlPanel->call("on_start");
 }
 
@@ -149,6 +151,18 @@ void Game::_process(float delta)
     }
 }
 
+void Game::SaveTopAI()
+{
+    if(!AI)
+        return;
+
+    const std::string targetFile = "best_species.txt";
+
+    AI->WriteSpeciesToFile(targetFile, AIType::Best);
+
+    ControlPanel->call("show_status", godot::String("Wrote: ") + targetFile.c_str());
+}
+
 void Game::DrawGame()
 {
     if(!ActiveMatch) {
@@ -199,12 +213,13 @@ void Game::DrawBricks(const std::vector<Brick>& bricks)
     DrawHelper(bricks, *Bricks);
 }
 
-void Game::DrawGhosts(const std::vector<std::shared_ptr<Match>>& matches){
+void Game::DrawGhosts(const std::vector<std::shared_ptr<Match>>& matches)
+{
     GhostPaddles->UnMarkAll();
     GhostBalls->UnMarkAll();
 
-    for(const auto& match : matches){
-        if (!match->HasEnded()){
+    for(const auto& match : matches) {
+        if(!match->HasEnded()) {
             DrawHelperInner(match->GetBallsForDrawing(), *GhostBalls);
             DrawHelperInner(match->GetPaddlesForDrawing(), *GhostPaddles);
         }

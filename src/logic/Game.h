@@ -39,6 +39,7 @@ public:
         TrainingThreads = std::max(threads, 1);
     }
 
+    void SaveTopAI();
 
     static void _register_methods();
 

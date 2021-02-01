@@ -4,6 +4,7 @@
 #include <population.h>
 
 #include <array>
+#include <fstream>
 #include <functional>
 
 using namespace mlbb;
@@ -240,6 +241,28 @@ int AITrainer::CountActiveAIMatches() const
     }
 
     return count;
+}
+
+void AITrainer::WriteSpeciesToFile(const std::string& fileName, AIType ai) const
+{
+    // TODO: handle different ai types
+
+    if(!AIPopulation)
+        throw std::runtime_error("no AI population to save from");
+
+    NEAT::Species* bestFound = nullptr;
+
+    for(auto* current : AIPopulation->species) {
+        if(!bestFound || bestFound->max_fitness < current->max_fitness) {
+            bestFound = current;
+        }
+    }
+
+    if(bestFound) {
+        std::ofstream writer(fileName);
+
+        bestFound->print_to_file(writer);
+    }
 }
 
 double AITrainer::GetScaledPaddleX(const Match& match) const

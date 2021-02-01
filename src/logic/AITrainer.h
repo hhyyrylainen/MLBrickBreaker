@@ -18,6 +18,10 @@ class Organism;
 
 namespace mlbb {
 
+enum class AIType {
+    Best
+};
+
 //! \brief Holds the AI simulation state and matches the AI is playing
 class AITrainer {
     struct RunningAI {
@@ -66,6 +70,8 @@ public:
     //! (basically just an index for now)
     std::tuple<std::shared_ptr<Match>, int> GetAIMatch(
         std::vector<std::shared_ptr<Match>>* ghostMatches = nullptr, int ghosts = 10) const;
+
+    void WriteSpeciesToFile(const std::string& fileName, AIType ai) const;
 
     int CountActiveAIMatches() const;
 
