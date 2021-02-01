@@ -64,7 +64,8 @@ public:
 
     //! \brief Returns a match for the user to view, second value is the AI identifier
     //! (basically just an index for now)
-    std::tuple<std::shared_ptr<Match>, int> GetAIMatch() const;
+    std::tuple<std::shared_ptr<Match>, int> GetAIMatch(
+        std::vector<std::shared_ptr<Match>>* ghostMatches = nullptr, int ghosts = 10) const;
 
     int CountActiveAIMatches() const;
 

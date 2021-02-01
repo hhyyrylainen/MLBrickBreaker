@@ -26,6 +26,11 @@ void Game::_register_methods()
     register_property<Game, decltype(BrickScene)>("BrickScene", &Game::BrickScene, nullptr);
     register_property<Game, decltype(BallScene)>("BallScene", &Game::BallScene, nullptr);
     register_property<Game, decltype(PaddleScene)>("PaddleScene", &Game::PaddleScene, nullptr);
+
+    register_property<Game, decltype(PaddleScene)>(
+        "GhostPaddleScene", &Game::GhostPaddleScene, nullptr);
+    register_property<Game, decltype(PaddleScene)>(
+        "GhostBallScene", &Game::GhostBallScene, nullptr);
 }
 
 void Game::_init() {}
@@ -56,6 +61,12 @@ void Game::_ready()
 
     Bricks = NodeHolder<godot::Node2D>(
         GameVisuals, [this]() { return static_cast<Node2D*>(BrickScene->instance()); });
+
+    GhostPaddles = NodeHolder<godot::Node2D>(
+        GameVisuals, [this]() { return static_cast<Node2D*>(GhostPaddleScene->instance()); });
+
+    GhostBalls = NodeHolder<godot::Node2D>(
+        GameVisuals, [this]() { return static_cast<Node2D*>(GhostBallScene->instance()); });
 
     if(PlayerControlled) {
         ActiveMatch = std::make_shared<Match>(windowSize.x, windowSize.y);
@@ -89,6 +100,8 @@ void Game::_process(float delta)
     const Clock::time_point start = Clock::now();
     Clock::duration aiDuration{};
 
+    AdditionalAIMatchesToShow.clear();
+
     if(PlayerControlled) {
         if(ActiveMatch) {
             ActiveMatch->Update(delta, UserInput());
@@ -108,7 +121,7 @@ void Game::_process(float delta)
         aiDuration = Clock::now() - aiStart;
 
         int aiID = -1;
-        std::tie(ActiveMatch, aiID) = AI->GetAIMatch();
+        std::tie(ActiveMatch, aiID) = AI->GetAIMatch(&AdditionalAIMatchesToShow);
 
         // Update AI stats to GUI
         ControlPanel->set("generation", AI->GetGenerationNumber());
@@ -147,6 +160,18 @@ void Game::DrawGame()
         DrawBalls(ActiveMatch->GetBallsForDrawing());
         DrawBricks(ActiveMatch->GetBricksForDrawing());
     }
+
+    DrawGhosts(AdditionalAIMatchesToShow);
+}
+
+template<class T, class HolderT>
+void DrawHelperInner(const std::vector<T>& gameObjects, HolderT& container)
+{
+    for(const auto& object : gameObjects) {
+        auto graphics = container.GetNext();
+
+        graphics->set_position(object.PositionAsVector());
+    }
 }
 
 template<class T, class HolderT>
@@ -154,11 +179,7 @@ void DrawHelper(const std::vector<T>& gameObjects, HolderT& container)
 {
     container.UnMarkAll();
 
-    for(const auto& object : gameObjects) {
-        auto graphics = container.GetNext();
-
-        graphics->set_position(object.PositionAsVector());
-    }
+    DrawHelperInner(gameObjects, container);
 
     container.FreeUnmarked();
 }
@@ -176,6 +197,21 @@ void Game::DrawBalls(const std::vector<Ball>& balls)
 void Game::DrawBricks(const std::vector<Brick>& bricks)
 {
     DrawHelper(bricks, *Bricks);
+}
+
+void Game::DrawGhosts(const std::vector<std::shared_ptr<Match>>& matches){
+    GhostPaddles->UnMarkAll();
+    GhostBalls->UnMarkAll();
+
+    for(const auto& match : matches){
+        if (!match->HasEnded()){
+            DrawHelperInner(match->GetBallsForDrawing(), *GhostBalls);
+            DrawHelperInner(match->GetPaddlesForDrawing(), *GhostPaddles);
+        }
+    }
+
+    GhostPaddles->FreeUnmarked();
+    GhostBalls->FreeUnmarked();
 }
 
 void Game::LoadNEAT()

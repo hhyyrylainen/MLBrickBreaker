@@ -192,23 +192,42 @@ void AITrainer::PerformAIThinking(
     output = ProgrammaticInput(left, right, special);
 }
 
-std::tuple<std::shared_ptr<Match>, int> AITrainer::GetAIMatch() const
+std::tuple<std::shared_ptr<Match>, int> AITrainer::GetAIMatch(
+    std::vector<std::shared_ptr<Match>>* ghostMatches, int ghosts) const
 {
+    std::optional<std::tuple<std::shared_ptr<Match>, int>> primaryResult;
+
+    if(!ghostMatches)
+        ghosts = 0;
+
     int index = 0;
 
     // For now just the first (alive one is shown, or the last one if nothing else)
     for(const auto& run : CurrentRuns) {
-        if(!run.PlayingMatch->HasEnded())
-            return std::make_tuple(run.PlayingMatch, index);
+        if(run.PlayingMatch->HasEnded())
+            continue;
+
+        if(!primaryResult) {
+            primaryResult = std::make_tuple(run.PlayingMatch, index);
+        } else {
+            if(ghosts-- > 0) {
+                ghostMatches->push_back(run.PlayingMatch);
+            }
+        }
 
         ++index;
     }
 
-    if(!CurrentRuns.empty())
-        return std::make_tuple(CurrentRuns.back().PlayingMatch, CurrentRuns.size() - 1);
+    if(!primaryResult)
+        primaryResult =
+            std::make_tuple(CurrentRuns.back().PlayingMatch, CurrentRuns.size() - 1);
 
-    // No good match to show
-    return std::make_tuple(nullptr, -1);
+    if(primaryResult) {
+        return *primaryResult;
+    } else {
+        // No good match to show
+        return std::make_tuple(nullptr, -1);
+    }
 }
 
 int AITrainer::CountActiveAIMatches() const
