@@ -39,6 +39,7 @@ public:
         TrainingThreads = std::max(threads, 1);
     }
 
+    void SaveTopAI();
 
     static void _register_methods();
 
@@ -51,6 +52,8 @@ private:
     void DrawGhosts(const std::vector<std::shared_ptr<Match>>& matches);
 
     void LoadNEAT();
+
+    void OnPerformSave();
 
 private:
     godot::Ref<godot::PackedScene> BrickScene = nullptr;

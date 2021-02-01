@@ -4,6 +4,7 @@
 #include <population.h>
 
 #include <array>
+#include <fstream>
 #include <functional>
 
 using namespace mlbb;
@@ -136,6 +137,12 @@ void AITrainer::Update(float delta, int iterations, int threads)
             species->compute_max_fitness();
         }
 
+        // Let other code do stuff if needed
+        if(GenerationEndCallback) {
+            GenerationEndCallback();
+            GenerationEndCallback = nullptr;
+        }
+
         // This creates the next generation
         AIPopulation->epoch(CurrentGeneration);
 
@@ -240,6 +247,50 @@ int AITrainer::CountActiveAIMatches() const
     }
 
     return count;
+}
+
+void AITrainer::WriteSpeciesToFile(const std::string& fileName, AIType ai) const
+{
+    // TODO: handle different ai types
+
+    if(!AIPopulation)
+        throw std::runtime_error("no AI population to save from");
+
+    NEAT::Species* bestFound = nullptr;
+
+    for(auto* current : AIPopulation->species) {
+        if(!bestFound || bestFound->max_fitness < current->max_fitness) {
+            bestFound = current;
+        }
+    }
+
+    if(bestFound) {
+        std::ofstream writer(fileName);
+
+        bestFound->print_to_file(writer);
+    }
+}
+
+void AITrainer::WriteOrganismToFile(const std::string& fileName, AIType ai) const
+{
+    // TODO: handle different ai types
+
+    if(!AIPopulation)
+        throw std::runtime_error("no AI population to save from");
+
+    NEAT::Organism* bestFound = nullptr;
+
+    for(auto* current : AIPopulation->organisms) {
+        if(!bestFound || bestFound->fitness < current->fitness) {
+            bestFound = current;
+        }
+    }
+
+    if(bestFound) {
+        std::ofstream writer(fileName);
+
+        bestFound->write_to_file(writer);
+    }
 }
 
 double AITrainer::GetScaledPaddleX(const Match& match) const
