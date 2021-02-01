@@ -48,6 +48,8 @@ private:
     void DrawBalls(const std::vector<Ball>& balls);
     void DrawBricks(const std::vector<Brick>& bricks);
 
+    void DrawGhosts(const std::vector<std::shared_ptr<Match>>& matches);
+
     void LoadNEAT();
 
 private:
@@ -55,12 +57,18 @@ private:
     godot::Ref<godot::PackedScene> BallScene = nullptr;
     godot::Ref<godot::PackedScene> PaddleScene = nullptr;
 
+    godot::Ref<godot::PackedScene> GhostPaddleScene = nullptr;
+    godot::Ref<godot::PackedScene> GhostBallScene = nullptr;
+
     godot::Node2D* GameVisuals = nullptr;
     godot::Control* ControlPanel = nullptr;
 
     std::optional<NodeHolder<godot::Node2D>> Paddles;
     std::optional<NodeHolder<godot::Node2D>> Balls;
     std::optional<NodeHolder<godot::Node2D>> Bricks;
+
+    std::optional<NodeHolder<godot::Node2D>> GhostPaddles;
+    std::optional<NodeHolder<godot::Node2D>> GhostBalls;
 
     bool PlayerControlled = false;
 
@@ -70,6 +78,7 @@ private:
 
     std::shared_ptr<Match> ActiveMatch;
     std::optional<AITrainer> AI;
+    std::vector<std::shared_ptr<Match>> AdditionalAIMatchesToShow;
 };
 
 } // namespace mlbb
