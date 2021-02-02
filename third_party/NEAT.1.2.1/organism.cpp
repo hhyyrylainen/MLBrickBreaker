@@ -13,6 +13,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
+// Modified version for MLBB
+
 #include "organism.h"
 
 using namespace NEAT;
@@ -95,7 +98,7 @@ void Organism::update_phenotype() {
 	modified = true;
 }
 
-bool Organism::print_to_file(char *filename) {
+bool Organism::print_to_file(const char* filename) {
 	
 	std::ofstream oFile(filename);
 

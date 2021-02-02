@@ -4,6 +4,7 @@
 #include <population.h>
 
 #include <array>
+#include <fstream>
 #include <functional>
 
 using namespace mlbb;
@@ -56,7 +57,8 @@ void AITrainer::Begin()
     SetupGenerationMatches();
 }
 
-void AITrainer::Update(float delta, int iterations, int threads)
+void AITrainer::Update(
+    float delta, int iterations, int threads, int paddleSpeed, int ballSpeed)
 {
     std::unique_lock<std::mutex> lock(TaskListMutex);
     EnsureRightThreadCount(threads > 1 ? threads : 0, lock);
@@ -76,7 +78,7 @@ void AITrainer::Update(float delta, int iterations, int threads)
             if(run.PlayingMatch->HasEnded())
                 continue;
 
-            RunSingleAI(run, delta, iterations);
+            RunSingleAI(run, delta, iterations, paddleSpeed, ballSpeed);
         }
 
         // Make sure threads do get notified about quit tasks
@@ -107,7 +109,8 @@ void AITrainer::Update(float delta, int iterations, int threads)
             ++currentChunk;
 
             if(currentChunk >= aisPerThread) {
-                TaskList.emplace(chunkStart, currentChunk, iterations, delta);
+                TaskList.emplace(
+                    chunkStart, currentChunk, iterations, delta, paddleSpeed, ballSpeed);
 
                 ++submittedTasks;
                 chunkStart = nullptr;
@@ -134,6 +137,12 @@ void AITrainer::Update(float delta, int iterations, int threads)
         for(auto species : AIPopulation->species) {
             species->compute_average_fitness();
             species->compute_max_fitness();
+        }
+
+        // Let other code do stuff if needed
+        if(GenerationEndCallback) {
+            GenerationEndCallback();
+            GenerationEndCallback = nullptr;
         }
 
         // This creates the next generation
@@ -192,23 +201,42 @@ void AITrainer::PerformAIThinking(
     output = ProgrammaticInput(left, right, special);
 }
 
-std::tuple<std::shared_ptr<Match>, int> AITrainer::GetAIMatch() const
+std::tuple<std::shared_ptr<Match>, int> AITrainer::GetAIMatch(
+    std::vector<std::shared_ptr<Match>>* ghostMatches, int ghosts) const
 {
+    std::optional<std::tuple<std::shared_ptr<Match>, int>> primaryResult;
+
+    if(!ghostMatches)
+        ghosts = 0;
+
     int index = 0;
 
     // For now just the first (alive one is shown, or the last one if nothing else)
     for(const auto& run : CurrentRuns) {
-        if(!run.PlayingMatch->HasEnded())
-            return std::make_tuple(run.PlayingMatch, index);
+        if(run.PlayingMatch->HasEnded())
+            continue;
+
+        if(!primaryResult) {
+            primaryResult = std::make_tuple(run.PlayingMatch, index);
+        } else {
+            if(ghosts-- > 0) {
+                ghostMatches->push_back(run.PlayingMatch);
+            }
+        }
 
         ++index;
     }
 
-    if(!CurrentRuns.empty())
-        return std::make_tuple(CurrentRuns.back().PlayingMatch, CurrentRuns.size() - 1);
+    if(!primaryResult)
+        primaryResult =
+            std::make_tuple(CurrentRuns.back().PlayingMatch, CurrentRuns.size() - 1);
 
-    // No good match to show
-    return std::make_tuple(nullptr, -1);
+    if(primaryResult) {
+        return *primaryResult;
+    } else {
+        // No good match to show
+        return std::make_tuple(nullptr, -1);
+    }
 }
 
 int AITrainer::CountActiveAIMatches() const
@@ -221,6 +249,50 @@ int AITrainer::CountActiveAIMatches() const
     }
 
     return count;
+}
+
+void AITrainer::WriteSpeciesToFile(const std::string& fileName, AIType ai) const
+{
+    // TODO: handle different ai types
+
+    if(!AIPopulation)
+        throw std::runtime_error("no AI population to save from");
+
+    NEAT::Species* bestFound = nullptr;
+
+    for(auto* current : AIPopulation->species) {
+        if(!bestFound || bestFound->max_fitness < current->max_fitness) {
+            bestFound = current;
+        }
+    }
+
+    if(bestFound) {
+        std::ofstream writer(fileName);
+
+        bestFound->print_to_file(writer);
+    }
+}
+
+void AITrainer::WriteOrganismToFile(const std::string& fileName, AIType ai) const
+{
+    // TODO: handle different ai types
+
+    if(!AIPopulation)
+        throw std::runtime_error("no AI population to save from");
+
+    NEAT::Organism* bestFound = nullptr;
+
+    for(auto* current : AIPopulation->organisms) {
+        if(!bestFound || bestFound->fitness < current->fitness) {
+            bestFound = current;
+        }
+    }
+
+    if(bestFound) {
+        std::ofstream writer(fileName);
+
+        bestFound->write_to_file(writer);
+    }
 }
 
 double AITrainer::GetScaledPaddleX(const Match& match) const
@@ -307,11 +379,13 @@ void AITrainer::RunTaskThread()
 void AITrainer::ProcessTask(AITrainer::AIRunTask& task)
 {
     for(int i = 0; i < task.Count; ++i) {
-        RunSingleAI(*task.TaskArray[i], task.Delta, task.Iterations);
+        RunSingleAI(
+            *task.TaskArray[i], task.Delta, task.Iterations, task.PaddleSpeed, task.BallSpeed);
     }
 }
 
-void AITrainer::RunSingleAI(AITrainer::RunningAI& run, float delta, int iterations)
+void AITrainer::RunSingleAI(
+    AITrainer::RunningAI& run, float delta, int iterations, int paddleSpeed, int ballSpeed)
 {
     do {
         // We don't have winners yet...
@@ -319,6 +393,7 @@ void AITrainer::RunSingleAI(AITrainer::RunningAI& run, float delta, int iteratio
 
         ProgrammaticInput input;
         PerformAIThinking(run.AI, *run.PlayingMatch, input);
+        run.PlayingMatch->SetGameVariables(paddleSpeed, ballSpeed);
         run.PlayingMatch->Update(delta, input);
 
         // Time out the AI after some time

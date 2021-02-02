@@ -7,3 +7,5 @@
 /bin/win64/
 .vs
 .history
+/best_species.txt
+/best_organism.txt
