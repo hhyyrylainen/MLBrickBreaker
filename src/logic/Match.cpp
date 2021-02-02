@@ -1,6 +1,4 @@
 #include "Match.h"
-#include <iostream>
-#include <string>
 
 using namespace mlbb;
 
@@ -123,7 +121,7 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
         CurrentPaddleSpeed = 0.f;
         PaddleSpeedMultiplier = 150.f;
         PaddleAccelerator = 100.f;
-        paddleState = STOPPED;
+        paddleState = PreviousPaddleState::STOPPED;
     case MatchState::Ended: 
         ResetPaddleVelocity();
         return;
@@ -140,7 +138,7 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
         else {
             SetPaddleSpeed(-PADDLE_SPEED);
         }
-        paddleState = LEFT;
+        paddleState = PreviousPaddleState::LEFT;
     }
     else if(input.GetRightPressed()) {
         if (paddleState == PreviousPaddleState::LEFT || paddleState == PreviousPaddleState::STOPPED) {
@@ -153,7 +151,7 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
         else {
             SetPaddleSpeed(PADDLE_SPEED); ;
         }
-        paddleState = RIGHT;
+        paddleState = PreviousPaddleState::RIGHT;
     }
     else {
         // decelerate the paddle
@@ -182,11 +180,11 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
         paddle.X += static_cast<int>(CurrentPaddleSpeed);
         if(paddle.X < 0) {
             paddle.X = 0;
-            paddleState = STOPPED;
+            paddleState = PreviousPaddleState::STOPPED;
             SetPaddleSpeed(0.f);
         } else if(paddle.X + PADDLE_WIDTH > Width) {
             paddle.X = Width - PADDLE_WIDTH;
-            paddleState = STOPPED;
+            paddleState = PreviousPaddleState::STOPPED;
             SetPaddleSpeed(0.f);
         }
 

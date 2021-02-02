@@ -12,7 +12,7 @@
 namespace mlbb {
 
 enum class MatchState { Starting, Serving, WaitingForNextServe, Ended, Playing };
-enum PreviousPaddleState {LEFT, RIGHT, STOPPED};
+enum class PreviousPaddleState {LEFT, RIGHT, STOPPED};
 
 
 //! \brief A single match of brick breaker
