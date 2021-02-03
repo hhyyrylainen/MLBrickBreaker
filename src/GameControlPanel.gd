@@ -22,9 +22,22 @@ export var update_performance_label_path: NodePath
 export var speed_control_path: NodePath
 export var thread_count_label_path: NodePath
 export var thread_slider_path: NodePath
+export var status_label_path: NodePath
+export var save_ai_button_path: NodePath
+export var ball_speed_label_path: NodePath
+export var ball_speed_slider_path: NodePath
+export var paddle_speed_label_path: NodePath
+export var paddle_speed_slider_path: NodePath
+export var ghost_control_path: NodePath
+
+export var status_hide_time: float = 3
 
 signal training_speed_changed
 signal threads_changed
+signal save_ai_pressed
+signal paddle_speed_changed
+signal ball_speed_changed
+signal ghost_count_changed
 
 # externally changed variables
 var is_player: bool = false
@@ -56,7 +69,16 @@ var update_performance_label: Label
 var speed_control: OptionButton
 var thread_count_label: Label
 var thread_slider: Slider
+var status_label: Label
+var save_ai_button: Button
+var ball_speed_label: Label
+var ball_speed_slider: Slider
+var paddle_speed_label: Label
+var paddle_speed_slider: Slider
+var ghost_control: OptionButton
 
+
+var status_visible_timer: float = 0
 
 var total_elapsed: float = 0
 
@@ -80,6 +102,13 @@ func _ready():
     speed_control = get_node(speed_control_path)
     thread_count_label = get_node(thread_count_label_path)
     thread_slider = get_node(thread_slider_path)
+    status_label = get_node(status_label_path)
+    save_ai_button = get_node(save_ai_button_path)
+    ball_speed_label = get_node(ball_speed_label_path)
+    ball_speed_slider = get_node(ball_speed_slider_path)
+    paddle_speed_label = get_node(paddle_speed_label_path)
+    paddle_speed_slider = get_node(paddle_speed_slider_path)
+    ghost_control = get_node(ghost_control_path)
 
 
 # Called from C++ when match startup code has ran
@@ -91,6 +120,12 @@ func on_start():
 
     # Set default thread count
     thread_slider.value = int(max(1, processors / 2))
+
+    emit_signal("paddle_speed_changed", int(paddle_speed_slider.value))
+    emit_signal("ball_speed_changed", int(ball_speed_slider.value))
+
+    paddle_speed_label.text = "%s" % int(paddle_speed_slider.value)
+    ball_speed_label.text = "%s" % int(ball_speed_slider.value)
 
 
 func _process(delta):
@@ -115,6 +150,16 @@ func _process(delta):
         alive_ais_label.text = "Alive AIs: %s" % alive_ais
         ai_performance_label.text = "AI + match sim: %sms" % stepify(ai_performance, 0.1)
 
+    save_ai_button.disabled = generation < 2
+
+    if status_visible_timer > 0:
+        status_visible_timer -= delta
+
+        if status_visible_timer <= 0:
+            status_label.text = ""
+            # Should this be hidden?
+            # status_label.visible = false
+
 func apply_visibility():
     # ai_start_button.visible = !is_player
     # For now the AI autostarts so this button is never used
@@ -122,6 +167,10 @@ func apply_visibility():
     ai_controls_container.visible = !is_player
     ai_stats_container.visible = !is_player
 
+func show_status(status: String):
+    status_label.visible = true
+    status_visible_timer = status_hide_time
+    status_label.text = status
 
 func _on_QuitButton_pressed():
     if get_tree().change_scene("res://src/MainMenu.tscn") != OK:
@@ -142,3 +191,23 @@ func _on_Threads_value_changed(value):
 
 func on_threads_updated(value):
     thread_count_label.text = "%s" % value
+
+
+func _on_SaveAI_pressed():
+    emit_signal("save_ai_pressed")
+
+
+func _on_BallSpeed_value_changed(value):
+    emit_signal("ball_speed_changed", int(value))
+    ball_speed_label.text = "%s" % int(value)
+
+
+func _on_PaddleSpeed_value_changed(value):
+    emit_signal("paddle_speed_changed", int(value))
+    paddle_speed_label.text = "%s" % int(value)
+
+
+func _on_OptionButton_item_selected(index):
+    var new_value: int = ghost_control.get_item_id(index) - 1
+
+    emit_signal("ghost_count_changed", new_value)

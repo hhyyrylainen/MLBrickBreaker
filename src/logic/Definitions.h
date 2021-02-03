@@ -20,9 +20,6 @@ constexpr auto BRICK_WIDTH = BRICK_WIDTH_PIXELS;
 constexpr auto BRICK_HEIGHT = BRICK_HEIGHT_PIXELS;
 constexpr auto BALL_SIZE = BALL_SIZE_PIXELS;
 
-constexpr float PADDLE_SPEED = 2700.f;
-constexpr float BALL_SPEED = 1100.f;
-
 constexpr int STARTING_LIVES = 3;
 constexpr int SCORE_PER_BROKEN_BRICK = 20;
 constexpr int LEVEL_CLEAR_SCORE = 500;
@@ -40,5 +37,10 @@ constexpr auto DELTA_FOR_60_FPS = 1/60.f;
 constexpr int USE_60_FPS_DELTA_WITH_SPED_UP_TRAINING_THRESHOLD = 1;
 
 constexpr float PI = 3.14159265359f;
+
+constexpr float PADDLE_CENTER_FLAT_BOUNCE_AREA = 0.15f;
+constexpr float PADDLE_MAX_ANGLE_DEVIATION_RADIANS = PI / 6;
+constexpr float PADDLE_ANGLE_DEVIATION_RESULTING_MAX_ANGLE = (PI / 2) - (PI / 180.f);
+
 
 } // namespace mlbb

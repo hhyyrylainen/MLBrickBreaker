@@ -39,6 +39,21 @@ public:
         TrainingThreads = std::max(threads, 1);
     }
 
+    void SetPaddleSpeed(int speed)
+    {
+        PaddleSpeed = speed;
+    }
+
+    void SetBallSpeed(int speed)
+    {
+        BallSpeed = speed;
+    }
+
+    void SetGhostCount(int count){
+        Ghosts = count;
+    }
+
+    void SaveTopAI();
 
     static void _register_methods();
 
@@ -48,12 +63,19 @@ private:
     void DrawBalls(const std::vector<Ball>& balls);
     void DrawBricks(const std::vector<Brick>& bricks);
 
+    void DrawGhosts(const std::vector<std::shared_ptr<Match>>& matches);
+
     void LoadNEAT();
+
+    void OnPerformSave();
 
 private:
     godot::Ref<godot::PackedScene> BrickScene = nullptr;
     godot::Ref<godot::PackedScene> BallScene = nullptr;
     godot::Ref<godot::PackedScene> PaddleScene = nullptr;
+
+    godot::Ref<godot::PackedScene> GhostPaddleScene = nullptr;
+    godot::Ref<godot::PackedScene> GhostBallScene = nullptr;
 
     godot::Node2D* GameVisuals = nullptr;
     godot::Control* ControlPanel = nullptr;
@@ -62,14 +84,24 @@ private:
     std::optional<NodeHolder<godot::Node2D>> Balls;
     std::optional<NodeHolder<godot::Node2D>> Bricks;
 
+    std::optional<NodeHolder<godot::Node2D>> GhostPaddles;
+    std::optional<NodeHolder<godot::Node2D>> GhostBalls;
+
     bool PlayerControlled = false;
 
     float TimePassed = 0.f;
     int SpeedMultiplier = 1;
     int TrainingThreads = 1;
+    int Ghosts = 10;
+
+    // Default values come from the GUI, so these are intentionally very small to catch
+    // problems
+    int PaddleSpeed = 1;
+    int BallSpeed = 1;
 
     std::shared_ptr<Match> ActiveMatch;
     std::optional<AITrainer> AI;
+    std::vector<std::shared_ptr<Match>> AdditionalAIMatchesToShow;
 };
 
 } // namespace mlbb

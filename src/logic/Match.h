@@ -64,6 +64,12 @@ public:
         return LivesLeft;
     }
 
+    void SetGameVariables(int paddleSpeed, int ballSpeed)
+    {
+        PaddleSpeed = paddleSpeed;
+        BallSpeed = ballSpeed;
+    }
+
 
     // None of the objects in these should be modified, only used for drawing
     // And for AI to read their state, might be a bit cleaner if that had separate named
@@ -98,8 +104,11 @@ private:
     std::tuple<int, int> CalculateBallStartPosition() const;
     godot::Vector2 CreateRandomInitialBallDirection();
 
-    static void HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
-        std::optional<godot::Vector2> extraVelocity = {});
+    //! \brief Handle ball collision against a game object
+    //! \param useAngleAdjustment If true the bounce angle is changed based on how near the top
+    //! edge the ball hit.
+    void HandleBallCollision(Ball& ball, const GameElement& collidedAgainst,
+        std::optional<godot::Vector2> extraVelocity = {}, bool useAngleAdjustment = false);
 
 private:
     const int Width;
@@ -107,6 +116,9 @@ private:
 
     //! The state of the match. Don't assign directly, use MoveToState
     MatchState State = MatchState::Starting;
+
+    int PaddleSpeed = 1;
+    int BallSpeed = 1;
 
     float TotalElapsed = 0;
     float CurrentStateElapsed = 0;
