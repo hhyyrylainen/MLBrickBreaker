@@ -5,6 +5,7 @@
 /bin/x11/
 /build-debug/
 /bin/win64/
+/out/build/
 .vs
 .history
 /best_species.txt
