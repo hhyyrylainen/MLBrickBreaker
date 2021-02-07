@@ -91,7 +91,6 @@ private:
     void MoveToState(MatchState newState);
 
     void HandlePaddleMove(float elapsed, const Input& input);
-    void ResetPaddleVelocity();
     void HandleBallMovement(float elapsed);
     void HandleBrickBreaking();
     void HandleStartup();

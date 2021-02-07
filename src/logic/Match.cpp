@@ -113,7 +113,6 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
 {
     switch(State) {
     case MatchState::Starting:
-        ResetPaddleVelocity();
     case MatchState::Ended: return;
     default: break;
     }
@@ -158,13 +157,6 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
             paddle.X = Width - PADDLE_WIDTH;
             paddle.Velocity.x = 0;
         }
-    }
-}
-
-void Match::ResetPaddleVelocity()
-{
-    for(auto& paddle : Paddles) {
-        paddle.Velocity = godot::Vector2(0, 0);
     }
 }
 
