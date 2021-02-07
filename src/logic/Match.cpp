@@ -1,6 +1,7 @@
 #include "Match.h"
 
 #include <algorithm>
+
 using namespace mlbb;
 
 constexpr auto NEXT_BALL_DELAY = 0.25f;
@@ -41,7 +42,6 @@ Match::Match(Match&& other) : Width(other.Width), Height(other.Height)
     RandomEngine = std::move(other.RandomEngine);
     BallHorizontalDistribution = std::move(other.BallHorizontalDistribution);
     HitBricks = std::move(other.HitBricks);
-    PaddleAccelerator = std::move(other.PaddleAccelerator);
 }
 
 Match::Match(const Match& other) : Width(other.Width), Height(other.Height)
@@ -55,7 +55,6 @@ Match::Match(const Match& other) : Width(other.Width), Height(other.Height)
     RandomEngine = other.RandomEngine;
     BallHorizontalDistribution = other.BallHorizontalDistribution;
     HitBricks = other.HitBricks;
-    PaddleAccelerator = other.PaddleAccelerator;
 }
 
 void Match::Update(float elapsed, const Input& input)
@@ -115,12 +114,12 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
     switch(State) {
     case MatchState::Starting:
         ResetPaddleVelocity();
-    case MatchState::Ended: 
-        ResetPaddleVelocity();
-        return;
+    case MatchState::Ended: return;
     default: break;
     }
-    PaddleAccelerator = PaddleSpeed / 0.3;
+
+    const float paddleAccelerator = float(PaddleSpeed) / 0.3f * elapsed;
+    const float maxSpeed = float(PaddleSpeed) / 100.f ;
     for (auto& paddle : Paddles) {
         if(input.GetLeftPressed() && paddle.Velocity.x > 0){
             paddle.Velocity.x = 0;
@@ -129,28 +128,28 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
             paddle.Velocity.x = 0;
         }
         if(input.GetLeftPressed()){
-            paddle.Velocity.x -= PaddleAccelerator * elapsed;
+            paddle.Velocity.x -= paddleAccelerator;
         }
         if(input.GetRightPressed()){
-            paddle.Velocity.x += PaddleAccelerator * elapsed;
+            paddle.Velocity.x += paddleAccelerator;
         }
         if (!input.GetRightPressed() && !input.GetLeftPressed()){
             /* decelerate */
-            if (paddle.Velocity.x > 0 ){
-                paddle.Velocity.x -= PaddleAccelerator * elapsed;
-            }
-            else if (paddle.Velocity.x < 0 ){
-                paddle.Velocity.x += PaddleAccelerator * elapsed;
-            }
-            if (std::abs(paddle.Velocity.x) < 1){
+            if (std::abs(paddle.Velocity.x) < (2 * paddleAccelerator)){
                 paddle.Velocity.x = 0;
             }
+            else if (paddle.Velocity.x > 0 ){
+                paddle.Velocity.x -= paddleAccelerator;
+            }
+            else if (paddle.Velocity.x < 0 ){
+                paddle.Velocity.x += paddleAccelerator;
+            }
         }
-        if (std::abs(paddle.Velocity.x) > PADDLE_SPEED){
+        if (std::abs(paddle.Velocity.x) > maxSpeed){
             std::clamp(
                 paddle.Velocity.x,
-                -PADDLE_SPEED,
-                PADDLE_SPEED
+                -maxSpeed,
+                maxSpeed
             ); 
         }
         paddle.X += paddle.Velocity.x * elapsed;

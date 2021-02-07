@@ -121,8 +121,7 @@ private:
 
     float TotalElapsed = 0;
     float CurrentStateElapsed = 0;
-    float PaddleAccelerator;
-
+    
     int Score = 0;
     int LivesLeft = STARTING_LIVES;
 
