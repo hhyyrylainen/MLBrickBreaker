@@ -121,7 +121,7 @@ private:
 
     float TotalElapsed = 0;
     float CurrentStateElapsed = 0;
-    
+
     int Score = 0;
     int LivesLeft = STARTING_LIVES;
 
