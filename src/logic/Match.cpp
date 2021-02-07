@@ -118,12 +118,12 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
     default: break;
     }
 
-    const float paddleAccelerator = float(PaddleSpeed) / 0.3f * elapsed;
-    const float maxSpeed = float(PaddleSpeed) / 100.f ;
+    const float paddleAccelerator = static_cast<float>(PaddleSpeed) / PADDLE_TIME_TO_FULL_SPEED * elapsed;
+    const float maxSpeed = PADDLE_SPEED;
     for (auto& paddle : Paddles) {
         if(input.GetLeftPressed() && paddle.Velocity.x > 0){
             paddle.Velocity.x = 0;
-        } 
+        }
         if(input.GetRightPressed() && paddle.Velocity.x < 0){
             paddle.Velocity.x = 0;
         }
