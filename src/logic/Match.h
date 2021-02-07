@@ -12,7 +12,6 @@
 namespace mlbb {
 
 enum class MatchState { Starting, Serving, WaitingForNextServe, Ended, Playing };
-enum class PreviousPaddleState {LEFT, RIGHT, STOPPED};
 
 
 //! \brief A single match of brick breaker
@@ -93,11 +92,8 @@ private:
 
     void HandlePaddleMove(float elapsed, const Input& input);
     void ResetPaddleVelocity();
-    void AcceleratePaddle(bool accelerate, float elapsed);
     void HandleBallMovement(float elapsed);
     void HandleBrickBreaking();
-    void SetPaddleSpeed(float newSpeed);
-
     void HandleStartup();
     void SetupLevel();
 
@@ -125,11 +121,7 @@ private:
 
     float TotalElapsed = 0;
     float CurrentStateElapsed = 0;
-
-    float CurrentPaddleSpeed;
-    float PaddleSpeedMultiplier;
     float PaddleAccelerator;
-    PreviousPaddleState paddleState;
 
     int Score = 0;
     int LivesLeft = STARTING_LIVES;

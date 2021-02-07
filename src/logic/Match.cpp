@@ -1,7 +1,6 @@
 #include "Match.h"
 
 #include <algorithm>
-
 using namespace mlbb;
 
 constexpr auto NEXT_BALL_DELAY = 0.25f;
@@ -42,10 +41,7 @@ Match::Match(Match&& other) : Width(other.Width), Height(other.Height)
     RandomEngine = std::move(other.RandomEngine);
     BallHorizontalDistribution = std::move(other.BallHorizontalDistribution);
     HitBricks = std::move(other.HitBricks);
-    CurrentPaddleSpeed = std::move(other.CurrentPaddleSpeed);
-    PaddleSpeedMultiplier = std::move(other.PaddleSpeedMultiplier);
     PaddleAccelerator = std::move(other.PaddleAccelerator);
-    paddleState = std::move(other.paddleState);
 }
 
 Match::Match(const Match& other) : Width(other.Width), Height(other.Height)
@@ -59,10 +55,7 @@ Match::Match(const Match& other) : Width(other.Width), Height(other.Height)
     RandomEngine = other.RandomEngine;
     BallHorizontalDistribution = other.BallHorizontalDistribution;
     HitBricks = other.HitBricks;
-    CurrentPaddleSpeed = other.CurrentPaddleSpeed;
-    PaddleSpeedMultiplier = other.PaddleSpeedMultiplier;
     PaddleAccelerator = other.PaddleAccelerator;
-    paddleState = other.paddleState;
 }
 
 void Match::Update(float elapsed, const Input& input)
@@ -122,99 +115,57 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
     switch(State) {
     case MatchState::Starting:
         ResetPaddleVelocity();
-        CurrentPaddleSpeed = 0.f;
-        PaddleSpeedMultiplier = 150.f;
-        PaddleAccelerator = 100.f;
-        paddleState = PreviousPaddleState::STOPPED;
     case MatchState::Ended: 
         ResetPaddleVelocity();
         return;
     default: break;
     }
-    if(input.GetLeftPressed()) {
-        if (paddleState == PreviousPaddleState::RIGHT || paddleState == PreviousPaddleState::STOPPED) {
-            ResetPaddleVelocity();
+    PaddleAccelerator = PaddleSpeed / 0.3;
+    for (auto& paddle : Paddles) {
+        if(input.GetLeftPressed() && paddle.Velocity.x > 0){
+            paddle.Velocity.x = 0;
+        } 
+        if(input.GetRightPressed() && paddle.Velocity.x < 0){
+            paddle.Velocity.x = 0;
         }
-        AcceleratePaddle(false, elapsed);
-        if (CurrentPaddleSpeed > -PADDLE_SPEED) {
-            PaddleSpeedMultiplier += PaddleAccelerator * elapsed; 
+        if(input.GetLeftPressed()){
+            paddle.Velocity.x -= PaddleAccelerator * elapsed;
         }
-        else {
-            SetPaddleSpeed(-PADDLE_SPEED);
+        if(input.GetRightPressed()){
+            paddle.Velocity.x += PaddleAccelerator * elapsed;
         }
-        paddleState = PreviousPaddleState::LEFT;
-    }
-    else if(input.GetRightPressed()) {
-        if (paddleState == PreviousPaddleState::LEFT || paddleState == PreviousPaddleState::STOPPED) {
-            ResetPaddleVelocity();
-        }
-        AcceleratePaddle(true, elapsed);
-        if ( CurrentPaddleSpeed < PADDLE_SPEED) {
-            PaddleSpeedMultiplier += PaddleAccelerator * elapsed;
-        }
-        else {
-            SetPaddleSpeed(PADDLE_SPEED); ;
-        }
-        paddleState = PreviousPaddleState::RIGHT;
-    }
-    else {
-        // decelerate the paddle
-        if (CurrentPaddleSpeed > 0) {
-            PaddleSpeedMultiplier -= PaddleAccelerator * elapsed;
-            AcceleratePaddle(false, elapsed);
-            if (CurrentPaddleSpeed <= 0){
-                SetPaddleSpeed(0.f);
+        if (!input.GetRightPressed() && !input.GetLeftPressed()){
+            /* decelerate */
+            if (paddle.Velocity.x > 0 ){
+                paddle.Velocity.x -= PaddleAccelerator * elapsed;
             }
-            
+            else if (paddle.Velocity.x < 0 ){
+                paddle.Velocity.x += PaddleAccelerator * elapsed;
+            }
+            if (std::abs(paddle.Velocity.x) < 1){
+                paddle.Velocity.x = 0;
+            }
         }
-        else if (CurrentPaddleSpeed < 0) {
-            PaddleSpeedMultiplier -= PaddleAccelerator * elapsed;
-            AcceleratePaddle(true, elapsed);
-            if (CurrentPaddleSpeed >= 0) {
-                SetPaddleSpeed(0.f);
-            }  
+        if (std::abs(paddle.Velocity.x) > PADDLE_SPEED){
+            std::clamp(
+                paddle.Velocity.x,
+                -PADDLE_SPEED,
+                PADDLE_SPEED
+            ); 
         }
-    }
-    if (PaddleSpeedMultiplier < 0 ) {
-        PaddleSpeedMultiplier = 0;
-    }
-
-    for(auto& paddle : Paddles) {
-        const auto previous = paddle.PositionAsVector();
-        paddle.X += static_cast<int>(CurrentPaddleSpeed);
+        paddle.X += paddle.Velocity.x * elapsed;
         if(paddle.X < 0) {
             paddle.X = 0;
-            paddleState = PreviousPaddleState::STOPPED;
-            SetPaddleSpeed(0.f);
+            paddle.Velocity.x = 0;
         } else if(paddle.X + PADDLE_WIDTH > Width) {
             paddle.X = Width - PADDLE_WIDTH;
-            paddleState = PreviousPaddleState::STOPPED;
-            SetPaddleSpeed(0.f);
+            paddle.Velocity.x = 0;
         }
-
-        paddle.Velocity = (paddle.PositionAsVector() - previous) / elapsed;
     }
-}
-
-void Match::AcceleratePaddle(bool accelerate, float elapsed)
-{
-    // either accelerate or decelerate the paddle
-    if (accelerate) {
-        CurrentPaddleSpeed +=  PaddleSpeedMultiplier * elapsed;
-    }
-    else{
-        CurrentPaddleSpeed -=  PaddleSpeedMultiplier * elapsed;
-    }
-}
-
-void Match::SetPaddleSpeed(float newSpeed){
-    CurrentPaddleSpeed = newSpeed;
 }
 
 void Match::ResetPaddleVelocity()
 {
-    PaddleSpeedMultiplier = PaddleAccelerator;
-    SetPaddleSpeed(0.f);
     for(auto& paddle : Paddles) {
         paddle.Velocity = godot::Vector2(0, 0);
     }
