@@ -133,11 +133,13 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
         if(input.GetLeftPressed()) {
             paddle.Velocity.x -= paddleAccelerator;
         }
+
         if(input.GetRightPressed()) {
             paddle.Velocity.x += paddleAccelerator;
         }
+
         if(!input.GetRightPressed() && !input.GetLeftPressed()) {
-            /* decelerate */
+            // decelerate
             if(std::abs(paddle.Velocity.x) < (2 * paddleAccelerator)) {
                 paddle.Velocity.x = 0;
             } else if(paddle.Velocity.x > 0) {
@@ -150,6 +152,8 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
         paddle.Velocity.x = std::clamp<float>(paddle.Velocity.x, -PaddleSpeed, PaddleSpeed);
 
         paddle.X += paddle.Velocity.x * elapsed;
+
+        // Hit against the walls
         if(paddle.X < 0) {
             paddle.X = 0;
             paddle.Velocity.x = 0;

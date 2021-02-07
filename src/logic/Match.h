@@ -93,6 +93,7 @@ private:
     void HandlePaddleMove(float elapsed, const Input& input);
     void HandleBallMovement(float elapsed);
     void HandleBrickBreaking();
+
     void HandleStartup();
     void SetupLevel();
 
