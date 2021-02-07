@@ -20,9 +20,8 @@ constexpr auto BRICK_WIDTH = BRICK_WIDTH_PIXELS;
 constexpr auto BRICK_HEIGHT = BRICK_HEIGHT_PIXELS;
 constexpr auto BALL_SIZE = BALL_SIZE_PIXELS;
 
-constexpr float BALL_SPEED = 1100.f;
 constexpr float PADDLE_TIME_TO_FULL_SPEED = 0.15f;
-constexpr float PADDLE_SPEED = 2700.f;
+constexpr bool PADDLE_IMMEDIATE_DIRECTION_VELOCITY_CANCEL = false;
 
 constexpr int STARTING_LIVES = 3;
 constexpr int SCORE_PER_BROKEN_BRICK = 20;

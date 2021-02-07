@@ -118,40 +118,38 @@ void Match::HandlePaddleMove(float elapsed, const Input& input)
     default: break;
     }
 
-    const float paddleAccelerator = static_cast<float>(PaddleSpeed) / PADDLE_TIME_TO_FULL_SPEED * elapsed;
-    const float maxSpeed = PADDLE_SPEED;
-    for (auto& paddle : Paddles) {
-        if(input.GetLeftPressed() && paddle.Velocity.x > 0){
-            paddle.Velocity.x = 0;
-        }
-        if(input.GetRightPressed() && paddle.Velocity.x < 0){
-            paddle.Velocity.x = 0;
-        }
-        if(input.GetLeftPressed()){
-            paddle.Velocity.x -= paddleAccelerator;
-        }
-        if(input.GetRightPressed()){
-            paddle.Velocity.x += paddleAccelerator;
-        }
-        if (!input.GetRightPressed() && !input.GetLeftPressed()){
-            /* decelerate */
-            if (std::abs(paddle.Velocity.x) < (2 * paddleAccelerator)){
+    const float paddleAccelerator =
+        static_cast<float>(PaddleSpeed) / PADDLE_TIME_TO_FULL_SPEED * elapsed;
+
+    for(auto& paddle : Paddles) {
+        if(PADDLE_IMMEDIATE_DIRECTION_VELOCITY_CANCEL) {
+            if(input.GetLeftPressed() && paddle.Velocity.x > 0) {
                 paddle.Velocity.x = 0;
             }
-            else if (paddle.Velocity.x > 0 ){
-                paddle.Velocity.x -= paddleAccelerator;
+            if(input.GetRightPressed() && paddle.Velocity.x < 0) {
+                paddle.Velocity.x = 0;
             }
-            else if (paddle.Velocity.x < 0 ){
+        }
+
+        if(input.GetLeftPressed()) {
+            paddle.Velocity.x -= paddleAccelerator;
+        }
+        if(input.GetRightPressed()) {
+            paddle.Velocity.x += paddleAccelerator;
+        }
+        if(!input.GetRightPressed() && !input.GetLeftPressed()) {
+            /* decelerate */
+            if(std::abs(paddle.Velocity.x) < (2 * paddleAccelerator)) {
+                paddle.Velocity.x = 0;
+            } else if(paddle.Velocity.x > 0) {
+                paddle.Velocity.x -= paddleAccelerator;
+            } else if(paddle.Velocity.x < 0) {
                 paddle.Velocity.x += paddleAccelerator;
             }
         }
-        if (std::abs(paddle.Velocity.x) > maxSpeed){
-            std::clamp(
-                paddle.Velocity.x,
-                -maxSpeed,
-                maxSpeed
-            ); 
-        }
+
+        paddle.Velocity.x = std::clamp<float>(paddle.Velocity.x, -PaddleSpeed, PaddleSpeed);
+
         paddle.X += paddle.Velocity.x * elapsed;
         if(paddle.X < 0) {
             paddle.X = 0;
