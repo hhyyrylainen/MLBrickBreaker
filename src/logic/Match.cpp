@@ -111,43 +111,56 @@ void Match::MoveToState(MatchState newState)
 
 void Match::HandlePaddleMove(float elapsed, const Input& input)
 {
-    ResetPaddleVelocity();
-
     switch(State) {
     case MatchState::Starting:
     case MatchState::Ended: return;
     default: break;
     }
 
-    float movement = 0;
-
-    if(input.GetLeftPressed()) {
-        movement -= PaddleSpeed * elapsed;
-    }
-
-    if(input.GetRightPressed()) {
-        movement += PaddleSpeed * elapsed;
-    }
+    const float paddleAccelerator =
+        static_cast<float>(PaddleSpeed) / PADDLE_TIME_TO_FULL_SPEED * elapsed;
 
     for(auto& paddle : Paddles) {
-        const auto previous = paddle.PositionAsVector();
-
-        paddle.X += static_cast<int>(movement);
-
-        if(paddle.X < 0) {
-            paddle.X = 0;
-        } else if(paddle.X + PADDLE_WIDTH > Width) {
-            paddle.X = Width - PADDLE_WIDTH;
+        if(PADDLE_IMMEDIATE_DIRECTION_VELOCITY_CANCEL) {
+            if(input.GetLeftPressed() && paddle.Velocity.x > 0) {
+                paddle.Velocity.x = 0;
+            }
+            if(input.GetRightPressed() && paddle.Velocity.x < 0) {
+                paddle.Velocity.x = 0;
+            }
         }
 
-        paddle.Velocity = (paddle.PositionAsVector() - previous) / elapsed;
-    }
-}
+        if(input.GetLeftPressed()) {
+            paddle.Velocity.x -= paddleAccelerator;
+        }
 
-void Match::ResetPaddleVelocity()
-{
-    for(auto& paddle : Paddles) {
-        paddle.Velocity = godot::Vector2(0, 0);
+        if(input.GetRightPressed()) {
+            paddle.Velocity.x += paddleAccelerator;
+        }
+
+        if(!input.GetRightPressed() && !input.GetLeftPressed()) {
+            // decelerate
+            if(std::abs(paddle.Velocity.x) < (2 * paddleAccelerator)) {
+                paddle.Velocity.x = 0;
+            } else if(paddle.Velocity.x > 0) {
+                paddle.Velocity.x -= paddleAccelerator;
+            } else if(paddle.Velocity.x < 0) {
+                paddle.Velocity.x += paddleAccelerator;
+            }
+        }
+
+        paddle.Velocity.x = std::clamp<float>(paddle.Velocity.x, -PaddleSpeed, PaddleSpeed);
+
+        paddle.X += paddle.Velocity.x * elapsed;
+
+        // Hit against the walls
+        if(paddle.X < 0) {
+            paddle.X = 0;
+            paddle.Velocity.x = 0;
+        } else if(paddle.X + PADDLE_WIDTH > Width) {
+            paddle.X = Width - PADDLE_WIDTH;
+            paddle.Velocity.x = 0;
+        }
     }
 }
 
